@@ -3,113 +3,149 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Memory Match · Chromo Arcade</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Memory · Chromo</title>
   <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Big+Shoulders+Display:wght@700;800;900&display=swap" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <style>
-    .memory-board {
+    .table {
+      --card-w: clamp(62px, 19vw, 88px);
       display: grid;
-      grid-template-columns: repeat(4, 72px);
-      grid-template-rows: repeat(4, 72px);
-      gap: 8px;
+      grid-template-columns: repeat(4, var(--card-w));
+      gap: 12px;
     }
-    .memory-card {
-      position: relative;
-      background: none;
-      border: none;
+    .card {
+      width: var(--card-w);
+      aspect-ratio: 5 / 7;
       padding: 0;
+      border: 0;
+      background: none;
       cursor: pointer;
-      perspective: 600px;
+      perspective: 700px;
     }
-    .memory-card-inner {
+    .card:disabled {
+      cursor: default;
+    }
+    .card-inner {
+      position: relative;
+      display: block;
       width: 100%;
       height: 100%;
-      border-radius: var(--radius-sm);
-      transition: transform 220ms ease;
       transform-style: preserve-3d;
-      position: relative;
+      transition: transform 260ms ease, opacity 300ms ease;
     }
-    .memory-card.is-flipped .memory-card-inner,
-    .memory-card.is-matched .memory-card-inner {
+    .card.is-up .card-inner,
+    .card.is-matched .card-inner {
       transform: rotateY(180deg);
     }
-    .memory-face {
+    .card.is-matched .card-inner {
+      opacity: 0.4;
+    }
+    .face {
       position: absolute;
       inset: 0;
-      border-radius: var(--radius-sm);
+      border-radius: 5px;
+      backface-visibility: hidden;
+    }
+    .face-back {
+      background-color: var(--mustard);
+      background-image:
+        repeating-linear-gradient(45deg, transparent 0 7px, rgba(22, 33, 59, 0.55) 7px 8px),
+        repeating-linear-gradient(-45deg, transparent 0 7px, rgba(22, 33, 59, 0.55) 7px 8px);
+      border: 4px solid var(--paper);
+      box-shadow: 0 0 0 1px var(--ink-soft);
+    }
+    .card:hover:not(:disabled) .face-back {
+      box-shadow: 0 0 0 2px var(--ink);
+    }
+    .face-front {
+      transform: rotateY(180deg);
+      background: var(--paper);
+      box-shadow: 0 0 0 1px var(--ink-soft);
+      color: var(--ink);
+      font-weight: 700;
+    }
+    .face-front.is-red {
+      color: var(--suit-red);
+    }
+    .corner {
+      position: absolute;
+      top: 6px;
+      left: 7px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: clamp(12px, 3.4vw, 15px);
+      line-height: 1;
+    }
+    .corner-bottom {
+      top: auto;
+      left: auto;
+      bottom: 6px;
+      right: 7px;
+      transform: rotate(180deg);
+    }
+    .pip {
+      position: absolute;
+      inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      backface-visibility: hidden;
-      border: 1px solid var(--border);
-    }
-    .memory-face-back {
-      background: var(--surface-alt);
-    }
-    .memory-face-back::after {
-      content: "?";
-      font-family: var(--font-mono);
-      color: var(--text-muted);
-      font-size: 1.2rem;
-    }
-    .memory-face-front {
-      background: var(--surface);
-      transform: rotateY(180deg);
-      font-size: 1.8rem;
-    }
-    .memory-card.is-matched .memory-face-front {
-      border-color: var(--success);
-    }
-    .memory-card:disabled {
-      cursor: default;
+      font-size: clamp(26px, 8vw, 38px);
     }
   </style>
 </head>
-<body style="--game-accent:#c98bf0">
+<body style="--box: var(--mustard)">
 
-  <header class="game-header">
+  <nav class="wrap topbar">
+    <a class="wordmark-sm" href="../../index.html">Chromo</a>
+    <a class="back" href="../../index.html">&larr; Back to the shelf</a>
+  </nav>
+
+  <header class="game-band">
     <div class="wrap">
-      <a class="back-link" href="../../index.html">&larr; All games</a>
-      <div class="game-title">
-        <span class="game-swatch"></span>
-        <h1>Memory Match</h1>
-      </div>
+      <h1 class="game-name">Memory</h1>
+      <span class="spec">1 player · Ages 5+ · 3 min</span>
     </div>
   </header>
 
-  <main class="wrap">
-    <div class="game-shell">
-
-      <div class="board-panel">
-        <p class="status-line" id="status" aria-live="polite">Flip two cards to begin</p>
-        <div class="memory-board" id="board"></div>
-        <div class="btn-row">
-          <button class="btn btn-primary" id="restart">New game</button>
-        </div>
+  <main class="wrap game-layout">
+    <section class="play-area">
+      <p class="status" id="status" aria-live="polite">Turn over two cards</p>
+      <div class="table" id="board" aria-label="Cards"></div>
+      <div class="actions">
+        <button class="btn" id="restart" type="button">Deal again</button>
       </div>
+    </section>
 
-      <div class="side-panel">
-        <div class="stat-block">
-          <h3>Progress</h3>
-          <div class="stat-row"><span>Moves</span><span id="moves">0</span></div>
-          <div class="stat-row"><span>Time</span><span id="timer">0:00</span></div>
-          <div class="stat-row"><span>Pairs</span><span id="pairs">0 / 8</span></div>
-        </div>
-        <div class="stat-block">
-          <h3>How to play</h3>
-          <p class="controls-hint">Flip two cards at a time. If the symbols match, they stay face up. Clear all 8 pairs in as few moves as possible.</p>
-        </div>
+    <aside class="game-side">
+      <div class="side-group">
+        <h2>This game</h2>
+        <dl class="scoreboard">
+          <div><dt>Moves</dt><dd id="moves">0</dd></div>
+          <div><dt>Time</dt><dd id="timer">0:00</dd></div>
+          <div><dt>Pairs</dt><dd id="pairs">0/8</dd></div>
+        </dl>
       </div>
-
-    </div>
+      <div class="side-group">
+        <h2>Fewest moves</h2>
+        <dl class="scoreboard">
+          <div><dt>Best</dt><dd id="best">&ndash;</dd></div>
+        </dl>
+      </div>
+      <div class="side-group">
+        <h2>How to play</h2>
+        <p>Turn over two cards per move. A matching pair stays face up; anything else flips back. The clock starts on your first card.</p>
+      </div>
+    </aside>
   </main>
 
-  <footer class="site-footer">
-    <div class="wrap">
-      <span>Chromo Arcade</span>
-      <span>Single player &middot; Mouse</span>
-    </div>
+  <footer class="wrap site-footer">
+    <span>Chromo</span>
+    <span>Your best game is saved in this browser.</span>
   </footer>
 
   <script src="game.js"></script>

@@ -3,72 +3,68 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Snake · Chromo Arcade</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Snake · Chromo</title>
   <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Big+Shoulders+Display:wght@700;800;900&display=swap" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <style>
     #canvas {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      image-rendering: pixelated;
+      display: block;
+      width: min(100%, 440px);
+      height: auto;
+      background: var(--paper);
+      border: 3px solid var(--ink);
+      border-radius: var(--radius);
       touch-action: none;
-    }
-    .overlay-msg {
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      color: var(--text-muted);
     }
   </style>
 </head>
-<body style="--game-accent:#7ac97e">
+<body style="--box: var(--sea)">
 
-  <header class="game-header">
+  <nav class="wrap topbar">
+    <a class="wordmark-sm" href="../../index.html">Chromo</a>
+    <a class="back" href="../../index.html">&larr; Back to the shelf</a>
+  </nav>
+
+  <header class="game-band">
     <div class="wrap">
-      <a class="back-link" href="../../index.html">&larr; All games</a>
-      <div class="game-title">
-        <span class="game-swatch"></span>
-        <h1>Snake</h1>
-      </div>
+      <h1 class="game-name">Snake</h1>
+      <span class="spec">1 player · Ages 6+ · 2–5 min</span>
     </div>
   </header>
 
-  <main class="wrap">
-    <div class="game-shell">
-
-      <div class="board-panel">
-        <p class="status-line" id="status" aria-live="polite">Press an arrow key to start</p>
-        <canvas id="canvas" width="400" height="400"></canvas>
-        <div class="btn-row">
-          <button class="btn btn-primary" id="restart">Restart</button>
-          <button class="btn" id="pause">Pause</button>
-        </div>
+  <main class="wrap game-layout">
+    <section class="play-area">
+      <p class="status" id="status" aria-live="polite">Ready</p>
+      <canvas id="canvas" aria-label="Snake board"></canvas>
+      <div class="actions">
+        <button class="btn" id="restart" type="button">Restart</button>
+        <button class="btn btn-quiet" id="pause" type="button">Pause</button>
       </div>
+    </section>
 
-      <div class="side-panel">
-        <div class="stat-block">
-          <h3>Score</h3>
-          <div class="stat-row"><span>Current</span><span id="score">0</span></div>
-          <div class="stat-row"><span>Best</span><span id="best">0</span></div>
-        </div>
-        <div class="stat-block">
-          <h3>Controls</h3>
-          <p class="controls-hint">
-            Move with <kbd>&uarr;</kbd> <kbd>&darr;</kbd> <kbd>&larr;</kbd> <kbd>&rarr;</kbd> or <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd>.<br />
-            <kbd>Space</kbd> to pause. Hitting a wall or yourself ends the run.
-          </p>
-        </div>
+    <aside class="game-side">
+      <div class="side-group">
+        <h2>Score</h2>
+        <dl class="scoreboard">
+          <div><dt>This run</dt><dd id="score">0</dd></div>
+          <div><dt>Best</dt><dd id="best">0</dd></div>
+        </dl>
       </div>
-
-    </div>
+      <div class="side-group">
+        <h2>Controls</h2>
+        <p>Steer with <kbd>&uarr;</kbd> <kbd>&darr;</kbd> <kbd>&larr;</kbd> <kbd>&rarr;</kbd> or <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd>. On a touchscreen, swipe across the board. <kbd>Space</kbd> pauses.</p>
+        <p>Each dot is one point. The run ends if you hit a wall or your own tail.</p>
+      </div>
+    </aside>
   </main>
 
-  <footer class="site-footer">
-    <div class="wrap">
-      <span>Chromo Arcade</span>
-      <span>Single player &middot; Keyboard</span>
-    </div>
+  <footer class="wrap site-footer">
+    <span>Chromo</span>
+    <span>Your best score is saved in this browser.</span>
   </footer>
 
   <script src="game.js"></script>

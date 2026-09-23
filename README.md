@@ -1,39 +1,39 @@
-# Chromo Arcade
+# Chromo
 
-A static browser-games template: plain HTML, CSS and vanilla JS, no build step,
-no dependencies. Comes with a home page listing three playable games.
+A static browser-games site: plain HTML, CSS and vanilla JS, no build step.
+The home page is a "shelf" of game boxes, each with a small self-playing preview.
 
 ## Games
 
-- **Tic-Tac-Toe** — `games/tic-tac-toe/` — local two-player hotseat with a score tracker.
-- **Snake** — `games/snake/` — canvas-based, keyboard-controlled, with a `localStorage` high score.
-- **Memory Match** — `games/memory-match/` — 4x4 card-flip matching game with a move counter and timer.
+- **Tic-Tac-Toe** (`games/tic-tac-toe/`): two players on one screen, score kept across rounds.
+- **Snake** (`games/snake/`): keyboard or swipe controls, best score saved in `localStorage`.
+- **Memory** (`games/memory-match/`): eight pairs of playing cards, with a move count, a timer and a saved best.
 
 ## Running locally
-
-No build step is required. Serve the folder with any static file server, for example:
 
 ```bash
 python3 -m http.server 8000
 ```
 
-Then open `http://localhost:8000`.
-
-(Opening `index.html` directly by double-clicking also works, since every page
-uses relative paths and plain `<script>` tags.)
+Then open `http://localhost:8000`. Opening `index.html` directly also works.
+Fonts (Big Shoulders Display, Atkinson Hyperlegible) load from Google Fonts,
+with system fallbacks when offline.
 
 ## Structure
 
 ```
-index.html                   Home page / game grid
-assets/css/styles.css        Shared design system (colors, layout, components)
-assets/img/favicon.svg       Site icon
-games/<game>/index.html      Game page (uses the shared header/footer + game-shell layout)
-games/<game>/game.js         Game logic
+index.html                  Home page (the shelf)
+assets/css/styles.css       Shared tokens, type and layout
+assets/js/shelf.js          Self-playing previews on the home page boxes
+assets/img/favicon.svg      Site icon
+games/<game>/index.html     Game page
+games/<game>/game.js        Game logic
 ```
 
-## Adding a new game
+## Adding a game
 
-1. Copy an existing `games/<game>/` folder as a starting point.
-2. Set `--game-accent` on `<body>` to a color for that game.
-3. Add a `<article class="card">` entry to the grid in `index.html` with a matching `--card-accent`.
+1. Copy a `games/<game>/` folder and rename it.
+2. Set the box colour on the page's `<body>`, e.g. `style="--box: var(--sea)"`, or add a new colour token in `styles.css`.
+3. Add an `<a class="box">` to the shelf in `index.html` with the game's spec line, name and blurb.
+4. For a live preview, add a demo function in `assets/js/shelf.js`, register it in `DEMOS`,
+   and point a `<canvas data-demo="...">` at it. Otherwise drop the canvas.

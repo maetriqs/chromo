@@ -1,10 +1,11 @@
 // By The_headphones
 
-const GRID_SIZE = 20;
+const GRID = 20;
 const CELL = 20;
-const START_SPEED_MS = 130;
-const MIN_SPEED_MS = 65;
-const SPEEDUP_PER_FOOD = 3;
+const BOARD = GRID * CELL;
+const START_MS = 130;
+const MIN_MS = 65;
+const SPEEDUP_MS = 3;
 const STORAGE_KEY = "chromo-snake-best";
 
 const canvas = document.getElementById("canvas");
@@ -12,18 +13,39 @@ const ctx = canvas.getContext("2d");
 const statusEl = document.getElementById("status");
 const scoreEl = document.getElementById("score");
 const bestEl = document.getElementById("best");
-const restartBtn = document.getElementById("restart");
 const pauseBtn = document.getElementById("pause");
 
+const dpr = Math.min(2, window.devicePixelRatio || 1);
+canvas.width = BOARD * dpr;
+canvas.height = BOARD * dpr;
+ctx.scale(dpr, dpr);
+
+const css = getComputedStyle(document.documentElement);
 const COLORS = {
-  bg: "#0b0c0e",
-  grid: "#16181c",
-  snake: "#7ac97e",
-  snakeHead: "#a6e6ac",
-  food: "#ff8a3d",
+  paper: css.getPropertyValue("--paper").trim(),
+  ink: css.getPropertyValue("--ink").trim(),
+  inkSoft: css.getPropertyValue("--ink-soft").trim(),
+  dot: css.getPropertyValue("--ground-deep").trim(),
+  food: css.getPropertyValue("--tomato").trim(),
 };
 
-let snake, direction, pendingDirection, food, score, best, tickMs, running, paused, gameOver, lastTick, rafId;
+let snake, direction, pendingDirection, food, score, best, tickMs, running, paused, gameOver, lastTick;
+
+function readBest() {
+  try {
+    return Number(localStorage.getItem(STORAGE_KEY)) || 0;
+  } catch {
+    return 0;
+  }
+}
+
+function saveBest(value) {
+  try {
+    localStorage.setItem(STORAGE_KEY, String(value));
+  } catch {
+    // Storage unavailable (private mode); best score lasts for this visit only.
+  }
+}
 
 function init() {
   snake = [
@@ -34,31 +56,28 @@ function init() {
   direction = { x: 1, y: 0 };
   pendingDirection = direction;
   score = 0;
-  tickMs = START_SPEED_MS;
+  tickMs = START_MS;
   running = false;
   paused = false;
   gameOver = false;
   lastTick = 0;
-  best = Number(localStorage.getItem(STORAGE_KEY) || 0);
+  best = Math.max(best || 0, readBest());
   placeFood();
   updateHud();
-  setStatus("Press an arrow key to start", "");
   pauseBtn.textContent = "Pause";
+  setStatus("Ready", "");
   draw();
-  if (rafId) cancelAnimationFrame(rafId);
-  rafId = requestAnimationFrame(loop);
+  drawMessage("Ready", "Press an arrow key or swipe to start");
 }
 
 function placeFood() {
-  let cell;
   do {
-    cell = { x: Math.floor(Math.random() * GRID_SIZE), y: Math.floor(Math.random() * GRID_SIZE) };
-  } while (snake.some((s) => s.x === cell.x && s.y === cell.y));
-  food = cell;
+    food = { x: Math.floor(Math.random() * GRID), y: Math.floor(Math.random() * GRID) };
+  } while (snake.some((s) => s.x === food.x && s.y === food.y));
 }
 
 function loop(timestamp) {
-  rafId = requestAnimationFrame(loop);
+  requestAnimationFrame(loop);
   if (!running || paused || gameOver) return;
   if (timestamp - lastTick < tickMs) return;
   lastTick = timestamp;
@@ -68,65 +87,100 @@ function loop(timestamp) {
 function step() {
   direction = pendingDirection;
   const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+  const hitsWall = head.x < 0 || head.y < 0 || head.x >= GRID || head.y >= GRID;
+  const eats = head.x === food.x && head.y === food.y;
+  // The tail moves out of the way this tick unless the snake is growing.
+  const body = eats ? snake : snake.slice(0, -1);
+  const hitsSelf = body.some((s) => s.x === head.x && s.y === head.y);
 
-  if (head.x < 0 || head.y < 0 || head.x >= GRID_SIZE || head.y >= GRID_SIZE || snakeCollides(head)) {
+  if (hitsWall || hitsSelf) {
     endGame();
     return;
   }
 
   snake.unshift(head);
-
-  if (head.x === food.x && head.y === food.y) {
+  if (eats) {
     score += 1;
-    tickMs = Math.max(MIN_SPEED_MS, START_SPEED_MS - score * SPEEDUP_PER_FOOD);
+    tickMs = Math.max(MIN_MS, START_MS - score * SPEEDUP_MS);
     placeFood();
     updateHud();
   } else {
     snake.pop();
   }
-
   draw();
-}
-
-function snakeCollides(point) {
-  return snake.some((s) => s.x === point.x && s.y === point.y);
 }
 
 function endGame() {
   gameOver = true;
   running = false;
-  if (score > best) {
+  const isNewBest = score > best;
+  if (isNewBest) {
     best = score;
-    localStorage.setItem(STORAGE_KEY, String(best));
+    saveBest(best);
   }
   updateHud();
-  setStatus(`Game over — score ${score}. Press Restart.`, "is-danger");
+  draw();
+  if (isNewBest) {
+    setStatus(`New best: ${score}`, "is-win");
+    drawMessage("New best", `${score} ${score === 1 ? "point" : "points"}. Press an arrow key to go again.`);
+  } else {
+    setStatus("Game over", "is-lose");
+    drawMessage("Game over", `${score} ${score === 1 ? "point" : "points"}. Press an arrow key to go again.`);
+  }
+}
+
+function roundedRect(x, y, w, h, r) {
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(x, y, w, h, r);
+  else ctx.rect(x, y, w, h);
 }
 
 function draw() {
-  ctx.fillStyle = COLORS.bg;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = COLORS.paper;
+  ctx.fillRect(0, 0, BOARD, BOARD);
 
-  ctx.strokeStyle = COLORS.grid;
-  ctx.lineWidth = 1;
-  for (let i = 1; i < GRID_SIZE; i++) {
-    ctx.beginPath();
-    ctx.moveTo(i * CELL + 0.5, 0);
-    ctx.lineTo(i * CELL + 0.5, canvas.height);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(0, i * CELL + 0.5);
-    ctx.lineTo(canvas.width, i * CELL + 0.5);
-    ctx.stroke();
+  ctx.fillStyle = COLORS.dot;
+  for (let x = 0; x < GRID; x++) {
+    for (let y = 0; y < GRID; y++) {
+      ctx.fillRect(x * CELL + CELL / 2 - 1, y * CELL + CELL / 2 - 1, 2, 2);
+    }
   }
 
   ctx.fillStyle = COLORS.food;
-  ctx.fillRect(food.x * CELL + 2, food.y * CELL + 2, CELL - 4, CELL - 4);
+  ctx.beginPath();
+  ctx.arc(food.x * CELL + CELL / 2, food.y * CELL + CELL / 2, CELL * 0.34, 0, Math.PI * 2);
+  ctx.fill();
 
-  snake.forEach((segment, i) => {
-    ctx.fillStyle = i === 0 ? COLORS.snakeHead : COLORS.snake;
-    ctx.fillRect(segment.x * CELL + 1, segment.y * CELL + 1, CELL - 2, CELL - 2);
+  ctx.fillStyle = COLORS.ink;
+  snake.forEach((s) => {
+    roundedRect(s.x * CELL + 1, s.y * CELL + 1, CELL - 2, CELL - 2, 5);
+    ctx.fill();
   });
+
+  const head = snake[0];
+  const hx = head.x * CELL + CELL / 2;
+  const hy = head.y * CELL + CELL / 2;
+  ctx.fillStyle = COLORS.paper;
+  [-1, 1].forEach((side) => {
+    ctx.beginPath();
+    ctx.arc(hx + direction.x * 3 + direction.y * 4 * side, hy + direction.y * 3 + direction.x * 4 * side, 2, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+
+function drawMessage(title, detail) {
+  ctx.fillStyle = COLORS.paper;
+  ctx.globalAlpha = 0.78;
+  ctx.fillRect(0, 0, BOARD, BOARD);
+  ctx.globalAlpha = 1;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = COLORS.ink;
+  ctx.font = '900 64px "Big Shoulders Display", "Arial Narrow", Arial, sans-serif';
+  ctx.fillText(title.toUpperCase(), BOARD / 2, BOARD / 2 - 14);
+  ctx.fillStyle = COLORS.inkSoft;
+  ctx.font = '700 14px "Atkinson Hyperlegible", Arial, sans-serif';
+  ctx.fillText(detail, BOARD / 2, BOARD / 2 + 34);
 }
 
 function updateHud() {
@@ -136,17 +190,19 @@ function updateHud() {
 
 function setStatus(text, cssClass) {
   statusEl.textContent = text;
-  statusEl.className = "status-line" + (cssClass ? " " + cssClass : "");
+  statusEl.className = "status" + (cssClass ? " " + cssClass : "");
 }
 
-function setDirection(x, y) {
-  if (gameOver) return;
-  // Ignore reversal into the snake's own body.
-  if (snake.length > 1 && x === -direction.x && y === -direction.y) return;
+function steer(x, y) {
+  if (gameOver) init();
+  if (paused) return;
+  // Reversing straight into the neck is always fatal, so ignore it.
+  if (x === -direction.x && y === -direction.y) return;
   pendingDirection = { x, y };
   if (!running) {
     running = true;
-    setStatus("Go!", "");
+    setStatus("Playing", "");
+    draw();
   }
 }
 
@@ -154,7 +210,9 @@ function togglePause() {
   if (!running || gameOver) return;
   paused = !paused;
   pauseBtn.textContent = paused ? "Resume" : "Pause";
-  setStatus(paused ? "Paused" : "Go!", "");
+  setStatus(paused ? "Paused" : "Playing", "");
+  draw();
+  if (paused) drawMessage("Paused", "Press Space or Resume to carry on");
 }
 
 const KEY_MAP = {
@@ -165,7 +223,7 @@ const KEY_MAP = {
 };
 
 document.addEventListener("keydown", (event) => {
-  if (event.code === "Space") {
+  if (event.code === "Space" && event.target === document.body) {
     event.preventDefault();
     togglePause();
     return;
@@ -173,11 +231,34 @@ document.addEventListener("keydown", (event) => {
   const mapped = KEY_MAP[event.code];
   if (mapped) {
     event.preventDefault();
-    setDirection(mapped[0], mapped[1]);
+    steer(mapped[0], mapped[1]);
   }
 });
 
-restartBtn.addEventListener("click", init);
+let swipeStart = null;
+canvas.addEventListener("pointerdown", (event) => {
+  swipeStart = { x: event.clientX, y: event.clientY };
+});
+canvas.addEventListener("pointerup", (event) => {
+  if (!swipeStart) return;
+  const dx = event.clientX - swipeStart.x;
+  const dy = event.clientY - swipeStart.y;
+  swipeStart = null;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
+  if (Math.abs(dx) > Math.abs(dy)) steer(Math.sign(dx), 0);
+  else steer(0, Math.sign(dy));
+});
+
+document.getElementById("restart").addEventListener("click", init);
 pauseBtn.addEventListener("click", togglePause);
 
 init();
+requestAnimationFrame(loop);
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => {
+    if (!running && !gameOver) {
+      draw();
+      drawMessage("Ready", "Press an arrow key or swipe to start");
+    }
+  });
+}

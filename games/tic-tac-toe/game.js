@@ -6,92 +6,74 @@ const WIN_LINES = [
   [0, 4, 8], [2, 4, 6],
 ];
 
+const MARK_SVG = {
+  X: '<svg viewBox="0 0 100 100" aria-hidden="true"><path pathLength="1" d="M18 18 L82 82"/><path pathLength="1" d="M82 18 L18 82"/></svg>',
+  O: '<svg viewBox="0 0 100 100" aria-hidden="true"><circle pathLength="1" cx="50" cy="50" r="34" transform="rotate(-90 50 50)"/></svg>',
+};
+
 const boardEl = document.getElementById("board");
 const statusEl = document.getElementById("status");
-const scoreXEl = document.getElementById("score-x");
-const scoreOEl = document.getElementById("score-o");
-const scoreDEl = document.getElementById("score-d");
+const scoreEls = {
+  X: document.getElementById("score-x"),
+  O: document.getElementById("score-o"),
+  D: document.getElementById("score-d"),
+};
 
-let cells = Array(9).fill(null);
-let current = "X";
-let roundOver = false;
+let cells, current, roundOver;
 let score = { X: 0, O: 0, D: 0 };
 
 function buildBoard() {
   boardEl.innerHTML = "";
+  boardEl.classList.remove("has-winner");
   for (let i = 0; i < 9; i++) {
     const btn = document.createElement("button");
+    btn.type = "button";
     btn.className = "ttt-cell";
     btn.setAttribute("role", "gridcell");
-    btn.setAttribute("aria-label", `Cell ${i + 1}`);
-    btn.dataset.index = String(i);
-    btn.addEventListener("click", onCellClick);
+    btn.setAttribute("aria-label", `Row ${Math.floor(i / 3) + 1}, column ${(i % 3) + 1}, empty`);
+    btn.addEventListener("click", () => play(i));
     boardEl.appendChild(btn);
   }
 }
 
-function onCellClick(event) {
-  const index = Number(event.currentTarget.dataset.index);
+function play(index) {
   if (roundOver || cells[index]) return;
 
   cells[index] = current;
-  render();
+  const cellEl = boardEl.children[index];
+  cellEl.dataset.mark = current;
+  cellEl.innerHTML = MARK_SVG[current];
+  cellEl.disabled = true;
+  cellEl.setAttribute("aria-label", `Row ${Math.floor(index / 3) + 1}, column ${(index % 3) + 1}, ${current}`);
 
-  const winningLine = findWinningLine();
+  const winningLine = WIN_LINES.find(([a, b, c]) => cells[a] && cells[a] === cells[b] && cells[a] === cells[c]);
   if (winningLine) {
-    roundOver = true;
-    score[current] += 1;
-    updateScoreboard();
-    setStatus(`${current} wins!`, "is-win");
-    highlightLine(winningLine);
+    winningLine.forEach((i) => boardEl.children[i].classList.add("is-winning"));
+    boardEl.classList.add("has-winner");
+    endRound(current, `${current} wins`, "is-win");
     return;
   }
 
   if (cells.every(Boolean)) {
-    roundOver = true;
-    score.D += 1;
-    updateScoreboard();
-    setStatus("Draw.", "");
+    endRound("D", "Draw", "");
     return;
   }
 
   current = current === "X" ? "O" : "X";
-  setStatus(`${current}'s turn`, "");
+  setStatus(`${current} to move`, "");
 }
 
-function findWinningLine() {
-  return WIN_LINES.find(([a, b, c]) => cells[a] && cells[a] === cells[b] && cells[a] === cells[c]) || null;
-}
-
-function highlightLine(line) {
-  line.forEach((i) => {
-    boardEl.children[i].classList.add("is-winning");
-  });
-}
-
-function render() {
-  Array.from(boardEl.children).forEach((cellEl, i) => {
-    const mark = cells[i];
-    cellEl.textContent = mark || "";
-    if (mark) {
-      cellEl.dataset.mark = mark;
-      cellEl.disabled = true;
-    } else {
-      delete cellEl.dataset.mark;
-      cellEl.disabled = roundOver;
-    }
-  });
+function endRound(scoreKey, message, cssClass) {
+  roundOver = true;
+  score[scoreKey] += 1;
+  scoreEls[scoreKey].textContent = String(score[scoreKey]);
+  Array.from(boardEl.children).forEach((cellEl) => { cellEl.disabled = true; });
+  setStatus(message, cssClass);
 }
 
 function setStatus(text, cssClass) {
   statusEl.textContent = text;
-  statusEl.className = "status-line" + (cssClass ? " " + cssClass : "");
-}
-
-function updateScoreboard() {
-  scoreXEl.textContent = String(score.X);
-  scoreOEl.textContent = String(score.O);
-  scoreDEl.textContent = String(score.D);
+  statusEl.className = "status" + (cssClass ? " " + cssClass : "");
 }
 
 function newRound() {
@@ -99,13 +81,12 @@ function newRound() {
   current = "X";
   roundOver = false;
   buildBoard();
-  render();
-  setStatus("X's turn", "");
+  setStatus("X to move", "");
 }
 
 function resetScore() {
   score = { X: 0, O: 0, D: 0 };
-  updateScoreboard();
+  Object.values(scoreEls).forEach((el) => { el.textContent = "0"; });
   newRound();
 }
 
