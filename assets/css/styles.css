@@ -20,6 +20,9 @@
   --kraft: #c9a77c;
   --kraft-deep: #a98b63;
   --lime: #a8c256;
+  --aqua: #5fc6d4;
+  --butter: #f7d85c;
+  --plum: #8f4f86;
   --suit-red: #c23b22;
 
   --win: #1d6b45;
@@ -142,12 +145,16 @@ a {
 .box-memory { --box: var(--mustard); }
 .box-2048 { --box: var(--kraft); }
 .box-mines { --box: var(--lime); }
-.box-lights {
+.box-stack { --box: var(--aqua); }
+.box-dash { --box: var(--butter); }
+.box-lights,
+.box-tilt {
   --box: #16213b;
   --ink: #fafbfc;
   --paper: #16213b;
   box-shadow: inset 0 7px 0 rgba(250, 251, 252, 0.16);
 }
+.box-tilt { --box: #8f4f86; }
 
 .box .spec {
   padding-top: 6px;
@@ -296,6 +303,72 @@ a {
 .btn:disabled {
   opacity: 0.4;
   cursor: default;
+}
+
+.stage {
+  position: relative;
+  width: min(100%, var(--stage-w, 480px));
+  aspect-ratio: var(--stage-ratio, 4 / 5);
+  border: 3px solid var(--ink);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--paper);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+}
+
+.stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.stage-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  text-align: center;
+  background: rgba(250, 251, 252, 0.74);
+  pointer-events: none;
+}
+
+.stage-overlay h2 {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(40px, 10vw, 64px);
+  line-height: 0.9;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.stage-overlay p {
+  margin: 0;
+  max-width: 30ch;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.stage-score {
+  position: absolute;
+  top: 12px;
+  left: 0;
+  right: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 60px;
+  line-height: 1;
+  text-align: center;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
 }
 
 .game-canvas {

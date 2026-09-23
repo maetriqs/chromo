@@ -708,7 +708,288 @@ function lightsDemo(canvas) {
   run({ step, draw }, 700, 6);
 }
 
+// Isometric helpers for the 3D shelf previews.
+function shade(hex, factor) {
+  const value = parseInt(hex.replace("#", ""), 16);
+  const channel = (shift) => Math.round(((value >> shift) & 255) * factor);
+  return `rgb(${channel(16)}, ${channel(8)}, ${channel(0)})`;
+}
+
+function isoProjector(ox, oy, s) {
+  return (x, y, z) => [ox + (x - z) * s * 0.866, oy + (x + z) * s * 0.5 - y * s];
+}
+
+function isoBox(ctx, P, x, y, z, w, h, d, color) {
+  const face = (points, fill) => {
+    ctx.beginPath();
+    points.forEach(([px, py, pz], i) => {
+      const [sx, sy] = P(px, py, pz);
+      if (i) ctx.lineTo(sx, sy);
+      else ctx.moveTo(sx, sy);
+    });
+    ctx.closePath();
+    ctx.fillStyle = fill;
+    ctx.fill();
+  };
+  face([[x, y + h, z], [x + w, y + h, z], [x + w, y + h, z + d], [x, y + h, z + d]], color);
+  face([[x, y, z + d], [x + w, y, z + d], [x + w, y + h, z + d], [x, y + h, z + d]], shade(color, 0.8));
+  face([[x + w, y, z], [x + w, y, z + d], [x + w, y + h, z + d], [x + w, y + h, z]], shade(color, 0.64));
+}
+
+function stackDemo(canvas) {
+  const { ctx, size, color } = setup(canvas);
+  const palette = ["tomato", "mustard", "lime", "sea", "sky", "lilac", "pink"].map(color);
+  const plinth = "#16213b";
+  const BH = 0.5;
+  let layers, moving, falling, hold;
+
+  function reset() {
+    layers = [{ x: -1.5, z: -1.5, w: 3, d: 3 }];
+    falling = [];
+    hold = 0;
+    nextBlock();
+  }
+
+  function nextBlock() {
+    const top = layers[layers.length - 1];
+    const axis = layers.length % 2 ? "x" : "z";
+    const span = axis === "x" ? top.w : top.d;
+    moving = { ...top, axis, t: 0, offset: (Math.random() - 0.5) * span * 0.45 };
+  }
+
+  function step() {
+    falling = falling.filter((f) => {
+      f.y -= 0.35;
+      return f.y > -6;
+    });
+    if (hold > 0) {
+      hold -= 1;
+      if (hold === 0) reset();
+      return;
+    }
+    moving.t = Math.min(1, moving.t + 0.07);
+    if (moving.t < 1) return;
+    const top = layers[layers.length - 1];
+    const { axis, offset } = moving;
+    const sizeKey = axis === "x" ? "w" : "d";
+    const kept = top[sizeKey] - Math.abs(offset);
+    const placed = { ...top };
+    placed[sizeKey] = kept;
+    placed[axis] = top[axis] + Math.max(0, offset);
+    const cut = { ...top, y: layers.length * BH, color: palette[layers.length % palette.length] };
+    cut[sizeKey] = Math.abs(offset);
+    cut[axis] = offset > 0 ? top[axis] + top[sizeKey] : top[axis] + offset;
+    if (Math.abs(offset) > 0.02) falling.push(cut);
+    layers.push(placed);
+    if (layers.length > 11 || kept < 0.9) hold = 12;
+    else nextBlock();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, size, size);
+    const s = size / 9;
+    const topY = layers.length * BH;
+    const P = isoProjector(size / 2, size * 0.5 + topY * s, s);
+    isoBox(ctx, P, -1.5, -10, -1.5, 3, 10, 3, plinth);
+    layers.forEach((l, i) => isoBox(ctx, P, l.x, i * BH, l.z, l.w, BH, l.d, palette[i % palette.length]));
+    falling.forEach((f) => isoBox(ctx, P, f.x, f.y, f.z, f.w, BH, f.d, f.color));
+    if (hold === 0 && moving) {
+      const top = layers[layers.length - 1];
+      const m = { ...top };
+      const ease = 1 - Math.pow(1 - moving.t, 3);
+      m[moving.axis] = top[moving.axis] - 3.2 + (3.2 + moving.offset) * ease;
+      isoBox(ctx, P, m.x, layers.length * BH, m.z, m.w, BH, m.d, palette[layers.length % palette.length]);
+    }
+  }
+
+  reset();
+  run({ step, draw }, 45, 40);
+}
+
+function dashDemo(canvas) {
+  const { ctx, size, color } = setup(canvas);
+  const LANE = [-1.2, 0, 1.2];
+  const road = [color("paper"), color("ground-deep")];
+  const block = "#16213b";
+  const runner = color("tomato");
+  const coin = color("mustard");
+  let things, scroll, lane, laneX, hop, spawnIn;
+
+  function reset() {
+    things = [];
+    scroll = 0;
+    lane = 1;
+    laneX = 0;
+    hop = 0;
+    spawnIn = 0;
+  }
+
+  function step() {
+    const speed = 0.16;
+    scroll = (scroll + speed) % 2;
+    things.forEach((t) => { t.z += speed; });
+    things = things.filter((t) => t.z < 3.5 && !(t.kind === "coin" && t.taken));
+    spawnIn -= speed;
+    if (spawnIn <= 0) {
+      const blocked = rand(3);
+      things.push({ kind: "block", lane: blocked, z: -9 });
+      const free = [0, 1, 2].filter((l) => l !== blocked);
+      if (Math.random() < 0.6) things.push({ kind: "coin", lane: free[rand(2)], z: -9 });
+      spawnIn = 3 + Math.random() * 1.5;
+    }
+    const danger = things.find((t) => t.kind === "block" && t.lane === lane && t.z > -3.2 && t.z < 0.5);
+    if (danger) {
+      const safe = [0, 1, 2].filter((l) => !things.some((t) => t.kind === "block" && t.lane === l && t.z > -3.2 && t.z < 0.8));
+      if (safe.length) lane = safe.sort((a, b) => Math.abs(a - lane) - Math.abs(b - lane))[0];
+    }
+    laneX += (LANE[lane] - laneX) * 0.35;
+    hop += 0.3;
+    things.forEach((t) => {
+      if (t.kind === "coin" && Math.abs(t.z) < 0.5 && LANE[t.lane] === LANE[lane] && Math.abs(laneX - LANE[lane]) < 0.3) t.taken = true;
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, size, size);
+    const s = size / 15;
+    const P = isoProjector(size / 2 - 3 * s * 0.866, size / 2 + 1.2 * s, s);
+    for (let z = -10 + scroll; z < 4; z += 2) {
+      isoBox(ctx, P, -1.8, -0.1, z, 3.6, 0.1, 1, road[0]);
+      isoBox(ctx, P, -1.8, -0.1, z + 1, 3.6, 0.1, 1, road[1]);
+    }
+    const items = things.map((t) => ({ ...t, x: LANE[t.lane] }));
+    items.push({ kind: "runner", x: laneX, z: 0 });
+    items.sort((a, b) => a.x + a.z - (b.x + b.z));
+    items.forEach((t) => {
+      if (t.kind === "block") {
+        isoBox(ctx, P, t.x - 0.45, 0, t.z - 0.35, 0.9, 1.6, 0.7, block);
+      } else if (t.kind === "coin") {
+        const [cx, cy] = P(t.x, 0.6, t.z);
+        ctx.fillStyle = coin;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, s * 0.22, s * 0.3, 0, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        const lift = Math.abs(Math.sin(hop)) * 0.25;
+        isoBox(ctx, P, t.x - 0.3, lift, -0.3, 0.6, 0.6, 0.6, runner);
+      }
+    });
+  }
+
+  reset();
+  run({ step, draw }, 40, 60);
+}
+
+function tiltDemo(canvas) {
+  const { ctx, size, color } = setup(canvas);
+  const N = 5;
+  const floor = color("ground");
+  const wall = "#16213b";
+  const ball = color("tomato");
+  const goal = color("sea");
+  let walls, path, progress, hold;
+
+  function build() {
+    const cells = Array.from({ length: N * N }, () => ({ n: true, e: true, s: true, w: true, seen: false }));
+    const at = (r, c) => cells[r * N + c];
+    const stack = [[0, 0]];
+    at(0, 0).seen = true;
+    while (stack.length) {
+      const [r, c] = stack[stack.length - 1];
+      const options = [[r - 1, c, "n", "s"], [r + 1, c, "s", "n"], [r, c - 1, "w", "e"], [r, c + 1, "e", "w"]]
+        .filter(([nr, nc]) => nr >= 0 && nc >= 0 && nr < N && nc < N && !at(nr, nc).seen);
+      if (!options.length) {
+        stack.pop();
+        continue;
+      }
+      const [nr, nc, a, b] = options[rand(options.length)];
+      at(r, c)[a] = false;
+      at(nr, nc)[b] = false;
+      at(nr, nc).seen = true;
+      stack.push([nr, nc]);
+    }
+    walls = [];
+    const T = 0.14;
+    for (let r = 0; r <= N; r++) {
+      for (let c = 0; c < N; c++) if (r === 0 || r === N || at(r, c).n) walls.push({ x: c, z: r - T / 2, w: 1, d: T });
+    }
+    for (let c = 0; c <= N; c++) {
+      for (let r = 0; r < N; r++) if (c === 0 || c === N || at(r, c).w) walls.push({ x: c - T / 2, z: r, w: T, d: 1 });
+    }
+    const prev = new Map([["0,0", null]]);
+    const queue = [[0, 0]];
+    while (queue.length) {
+      const [r, c] = queue.shift();
+      const cell = at(r, c);
+      [[r - 1, c, cell.n], [r + 1, c, cell.s], [r, c - 1, cell.w], [r, c + 1, cell.e]].forEach(([nr, nc, blocked]) => {
+        const key = `${nr},${nc}`;
+        if (!blocked && !prev.has(key)) {
+          prev.set(key, [r, c]);
+          queue.push([nr, nc]);
+        }
+      });
+    }
+    path = [];
+    let node = [N - 1, N - 1];
+    while (node) {
+      path.unshift(node);
+      node = prev.get(`${node[0]},${node[1]}`);
+    }
+    progress = 0;
+    hold = 0;
+  }
+
+  function step() {
+    if (progress >= path.length - 1) {
+      hold += 1;
+      if (hold > 18) build();
+      return;
+    }
+    progress = Math.min(path.length - 1, progress + 0.12);
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, size, size);
+    const s = size / 8.2;
+    const P = isoProjector(size / 2, size / 2 - 2.5 * s + 0.2 * s, s);
+    isoBox(ctx, P, -0.1, -0.3, -0.1, N + 0.2, 0.3, N + 0.2, floor);
+    const [gx, gy] = P(N - 0.5, 0, N - 0.5);
+    ctx.fillStyle = goal;
+    ctx.beginPath();
+    ctx.ellipse(gx, gy, s * 0.3, s * 0.17, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    const i = Math.floor(progress);
+    const f = progress - i;
+    const a = path[i];
+    const b = path[Math.min(i + 1, path.length - 1)];
+    const bx = a[1] + (b[1] - a[1]) * f + 0.5;
+    const bz = a[0] + (b[0] - a[0]) * f + 0.5;
+
+    const items = walls.map((w) => ({ ...w, key: w.x + w.w / 2 + w.z + w.d / 2 }));
+    items.push({ ball: true, key: bx + bz });
+    items.sort((p, q) => p.key - q.key);
+    items.forEach((it) => {
+      if (it.ball) {
+        const [cx, cy] = P(bx, 0.28, bz);
+        ctx.fillStyle = ball;
+        ctx.beginPath();
+        ctx.arc(cx, cy, s * 0.28, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        isoBox(ctx, P, it.x, 0, it.z, it.w, 0.4, it.d, wall);
+      }
+    });
+  }
+
+  build();
+  run({ step, draw }, 45, 12);
+}
+
 const DEMOS = {
+  stack: stackDemo,
+  dash: dashDemo,
+  tilt: tiltDemo,
   ttt: ticTacToeDemo,
   snake: snakeDemo,
   memory: memoryDemo,

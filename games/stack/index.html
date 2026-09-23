@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<!-- By The_headphones -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Stack · Chromo</title>
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Big+Shoulders+Display:wght@700;800;900&display=swap" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+</head>
+<body style="--box: var(--aqua)">
+
+  <nav class="wrap topbar">
+    <a class="wordmark-sm" href="../../index.html">Chromo</a>
+    <div class="topbar-links">
+      <button class="sound-toggle" id="sound-toggle" type="button">Sound: on</button>
+      <a class="back" href="../../index.html">&larr; Back to the shelf</a>
+    </div>
+  </nav>
+
+  <header class="game-band">
+    <div class="wrap">
+      <h1 class="game-name">Stack</h1>
+      <span class="spec">1 player · Ages 6+ · 2 min · 3D</span>
+    </div>
+  </header>
+
+  <main class="wrap game-layout">
+    <section class="play-area">
+      <p class="status" id="status" aria-live="polite">Ready</p>
+      <div class="stage" id="stage" style="--stage-ratio: 4 / 5" aria-label="Stack tower, 3D view">
+        <div class="stage-score" id="live-score" hidden>0</div>
+        <div class="stage-overlay">
+          <h2>Stack</h2>
+          <p>Tap, click or press Space to drop each block</p>
+        </div>
+      </div>
+    </section>
+
+    <aside class="game-side">
+      <div class="side-group">
+        <h2>Score</h2>
+        <dl class="scoreboard">
+          <div><dt>Height</dt><dd id="score">0</dd></div>
+          <div><dt>Perfect run</dt><dd id="streak">0</dd></div>
+          <div><dt>Best</dt><dd id="best">0</dd></div>
+        </dl>
+      </div>
+      <div class="side-group">
+        <h2>How to play</h2>
+        <p>A block slides back and forth above the tower. Drop it with a click, a tap or <kbd>Space</kbd>. Anything hanging over the edge is sliced off, so the tower gets narrower.</p>
+        <p>Land a block almost exactly on the one below for a perfect drop. Three perfect drops in a row start growing the block back. Miss the tower completely and it's over.</p>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="wrap site-footer">
+    <span>Chromo</span>
+    <span>Your best tower is saved in this browser.</span>
+  </footer>
+
+  <script src="../../assets/vendor/three.min.js"></script>
+  <script src="../../assets/js/sound.js"></script>
+  <script src="../../assets/js/three-kit.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

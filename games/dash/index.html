@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!-- By The_headphones -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Dash · Chromo</title>
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Big+Shoulders+Display:wght@700;800;900&display=swap" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+</head>
+<body style="--box: var(--butter)">
+
+  <nav class="wrap topbar">
+    <a class="wordmark-sm" href="../../index.html">Chromo</a>
+    <div class="topbar-links">
+      <button class="sound-toggle" id="sound-toggle" type="button">Sound: on</button>
+      <a class="back" href="../../index.html">&larr; Back to the shelf</a>
+    </div>
+  </nav>
+
+  <header class="game-band">
+    <div class="wrap">
+      <h1 class="game-name">Dash</h1>
+      <span class="spec">1 player · Ages 7+ · 3 min · 3D</span>
+    </div>
+  </header>
+
+  <main class="wrap game-layout">
+    <section class="play-area">
+      <p class="status" id="status" aria-live="polite">Ready</p>
+      <div class="stage" id="stage" style="--stage-w: 520px; --stage-ratio: 1 / 1" aria-label="Dash track, 3D view">
+        <div class="stage-score" id="live-score" hidden>0</div>
+        <div class="stage-overlay">
+          <h2>Dash</h2>
+          <p>Press an arrow key, or tap, to start running</p>
+        </div>
+      </div>
+    </section>
+
+    <aside class="game-side">
+      <div class="side-group">
+        <h2>This run</h2>
+        <dl class="scoreboard">
+          <div><dt>Metres</dt><dd id="metres">0</dd></div>
+          <div><dt>Coins</dt><dd id="coins">0</dd></div>
+        </dl>
+        <dl class="scoreboard">
+          <div><dt>Score</dt><dd id="score">0</dd></div>
+          <div><dt>Best</dt><dd id="best">0</dd></div>
+        </dl>
+      </div>
+      <div class="side-group">
+        <h2>Controls</h2>
+        <p>Change lanes with <kbd>&larr;</kbd> <kbd>&rarr;</kbd> or <kbd>A</kbd> <kbd>D</kbd>. Jump with <kbd>&uarr;</kbd>, <kbd>W</kbd> or <kbd>Space</kbd>, and press <kbd>&darr;</kbd> in the air to drop fast. On a touchscreen, swipe left, right, up or down, or tap to jump.</p>
+        <p>Jump the low yellow barriers and steer round the tall towers. Score is metres run plus 25 for each coin. The track gets faster the further you go.</p>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="wrap site-footer">
+    <span>Chromo</span>
+    <span>Your best score is saved in this browser.</span>
+  </footer>
+
+  <script src="../../assets/vendor/three.min.js"></script>
+  <script src="../../assets/js/sound.js"></script>
+  <script src="../../assets/js/three-kit.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

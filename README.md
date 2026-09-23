@@ -5,6 +5,11 @@ The home page is a set of shelves of game boxes, each with a small self-playing 
 
 ## Games
 
+**3D** (rendered with Three.js)
+- **Stack** (`games/stack/`): drop sliding blocks to build a tower; overhangs are sliced off, and perfect drops chain and regrow the block.
+- **Dash** (`games/dash/`): three-lane runner with jumps, fast-drops, coins and rising speed.
+- **Tilt** (`games/tilt/`): tip a maze board to roll a ball to the goal; mazes grow each level and holes appear from level 3.
+
 **Arcade**
 - **Snake** (`games/snake/`): keyboard or swipe controls, timed bonus stars, saved best score.
 - **Bricks** (`games/bricks/`): paddle-and-ball brick breaker with combos, a wide-paddle power-up and endless levels.
@@ -32,6 +37,10 @@ Then open `http://localhost:8000`. Opening `index.html` directly also works.
 Fonts (Big Shoulders Display, Atkinson Hyperlegible) load from Google Fonts,
 with system fallbacks when offline.
 
+The 3D games need WebGL. Three.js r128 (MIT) is vendored at `assets/vendor/three.min.js`
+so the site has no runtime CDN dependency. If WebGL is unavailable, the game shows a
+message on its stage instead of failing silently.
+
 ## Structure
 
 ```
@@ -39,6 +48,8 @@ index.html                  Home page (the shelves)
 assets/css/styles.css       Shared tokens, type, layout and controls
 assets/js/shelf.js          Self-playing previews on the home page boxes
 assets/js/sound.js          Shared sound effects and the Sound on/off toggle
+assets/js/three-kit.js      Shared Three.js stage, lights, resize and storage helpers
+assets/vendor/three.min.js  Three.js r128
 assets/img/favicon.svg      Site icon
 games/<game>/index.html     Game page
 games/<game>/game.js        Game logic

@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Chromo</title>
-  <meta name="description" content="Nine small games that run in your browser: arcade games, table games and puzzles." />
+  <meta name="description" content="Twelve small games that run in your browser: 3D games, arcade games, table games and puzzles." />
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,10 +16,37 @@
 
   <header class="wrap masthead">
     <h1 class="wordmark">Chromo</h1>
-    <p class="lede">Nine small games that run in your browser. Pick one off the shelf. There's nothing to install and no account to make.</p>
+    <p class="lede">Twelve small games that run in your browser, three of them in 3D. Pick one off the shelf. There's nothing to install and no account to make.</p>
   </header>
 
   <main class="wrap shelves">
+
+    <section aria-label="3D games">
+      <div class="shelf-row">
+        <a class="box box-md box-stack" href="games/stack/index.html">
+          <span class="spec">1 player · Ages 6+ · 2 min</span>
+          <canvas class="box-demo" data-demo="stack" data-size="220" aria-hidden="true"></canvas>
+          <span class="box-name">Stack</span>
+          <span class="box-blurb">Drop sliding blocks to build a tower. Whatever overhangs gets sliced off.</span>
+          <span class="box-play">Play</span>
+        </a>
+        <a class="box box-lg box-dash" href="games/dash/index.html">
+          <span class="spec">1 player · Ages 7+ · 3 min</span>
+          <canvas class="box-demo" data-demo="dash" data-size="280" aria-hidden="true"></canvas>
+          <span class="box-name">Dash</span>
+          <span class="box-blurb">Run three lanes, jump the barriers, dodge the towers and grab coins as it speeds up.</span>
+          <span class="box-play">Play</span>
+        </a>
+        <a class="box box-sm box-tilt" href="games/tilt/index.html">
+          <span class="spec">1 player · Ages 7+ · 5 min</span>
+          <canvas class="box-demo" data-demo="tilt" data-size="184" aria-hidden="true"></canvas>
+          <span class="box-name">Tilt</span>
+          <span class="box-blurb">Tip the maze to roll the ball home. Mind the holes.</span>
+          <span class="box-play">Play</span>
+        </a>
+      </div>
+      <div class="shelf-board spec"><span>3D</span><span>3 games</span></div>
+    </section>
 
     <section aria-label="Arcade games">
       <div class="shelf-row">
