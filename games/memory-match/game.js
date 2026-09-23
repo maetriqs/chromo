@@ -20,6 +20,7 @@ const pairsEl = document.getElementById("pairs");
 const bestEl = document.getElementById("best");
 
 let deck, faceUp, pairsFound, moves, seconds, timerId, busy;
+let streak = 0;
 
 function readBest() {
   try {
@@ -53,6 +54,7 @@ function deal() {
   moves = 0;
   seconds = 0;
   busy = false;
+  streak = 0;
   clearInterval(timerId);
   timerId = null;
 
@@ -97,6 +99,7 @@ function turnOver(index, el) {
 
   el.classList.add("is-up");
   el.setAttribute("aria-label", card.name);
+  Sound.play("tap");
   faceUp.push({ index, el, card });
   if (faceUp.length < 2) {
     setStatus("Find its pair", "");
@@ -118,14 +121,21 @@ function turnOver(index, el) {
         f.el.setAttribute("aria-label", `${f.card.name}, matched`);
       });
       pairsFound += 1;
+      streak += 1;
       pairsEl.textContent = `${pairsFound}/${CARDS.length}`;
       faceUp = [];
       busy = false;
-      if (pairsFound === CARDS.length) finish();
-      else setStatus("Pair", "is-win");
+      if (pairsFound === CARDS.length) {
+        finish();
+      } else {
+        setStatus(streak > 1 ? `${streak} pairs in a row` : "Pair", "is-win");
+        Sound.play(streak > 1 ? "win" : "good");
+      }
     }, 380);
   } else {
+    streak = 0;
     setStatus("No pair", "");
+    setTimeout(() => Sound.play("place"), 250);
     setTimeout(() => {
       [a, b].forEach((f) => {
         f.el.classList.remove("is-up");
@@ -139,6 +149,7 @@ function turnOver(index, el) {
 
 function finish() {
   clearInterval(timerId);
+  Sound.play("win");
   const best = readBest();
   if (!best || moves < best) {
     saveBest(moves);

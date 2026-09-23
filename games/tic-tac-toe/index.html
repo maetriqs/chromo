@@ -62,13 +62,16 @@
 
   <nav class="wrap topbar">
     <a class="wordmark-sm" href="../../index.html">Chromo</a>
-    <a class="back" href="../../index.html">&larr; Back to the shelf</a>
+    <div class="topbar-links">
+      <button class="sound-toggle" id="sound-toggle" type="button">Sound: on</button>
+      <a class="back" href="../../index.html">&larr; Back to the shelf</a>
+    </div>
   </nav>
 
   <header class="game-band">
     <div class="wrap">
       <h1 class="game-name">Tic-Tac-Toe</h1>
-      <span class="spec">2 players · Ages 4+ · 1 min</span>
+      <span class="spec">1–2 players · Ages 4+ · 1 min</span>
     </div>
   </header>
 
@@ -84,25 +87,35 @@
 
     <aside class="game-side">
       <div class="side-group">
+        <h2>Opponent</h2>
+        <div class="segmented" id="mode" role="group" aria-label="Opponent">
+          <button type="button" data-mode="friend" aria-pressed="false">Friend</button>
+          <button type="button" data-mode="easy" aria-pressed="true">Easy</button>
+          <button type="button" data-mode="hard" aria-pressed="false">Hard</button>
+        </div>
+        <p>Easy and Hard are the computer. Hard plays perfectly and can't be beaten, so a draw is a good result.</p>
+      </div>
+      <div class="side-group">
         <h2>Score</h2>
         <dl class="scoreboard">
-          <div><dt>X</dt><dd id="score-x">0</dd></div>
-          <div><dt>O</dt><dd id="score-o">0</dd></div>
+          <div><dt id="label-x">You</dt><dd id="score-x">0</dd></div>
+          <div><dt id="label-o">Computer</dt><dd id="score-o">0</dd></div>
           <div><dt>Draws</dt><dd id="score-d">0</dd></div>
         </dl>
       </div>
       <div class="side-group">
         <h2>How to play</h2>
-        <p>Two people share this screen and take turns. X always opens the round. Three marks in a row, across, down or diagonally, wins it.</p>
+        <p>Take turns placing marks. X always opens the round. Three marks in a row, across, down or diagonally, wins it.</p>
       </div>
     </aside>
   </main>
 
   <footer class="wrap site-footer">
     <span>Chromo</span>
-    <span>The score resets when you close the page.</span>
+    <span>The score resets when you change opponent.</span>
   </footer>
 
+  <script src="../../assets/js/sound.js"></script>
   <script src="game.js"></script>
 </body>
 </html>

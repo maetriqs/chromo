@@ -4,25 +4,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Snake · Chromo</title>
+  <title>Glide · Chromo</title>
   <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Big+Shoulders+Display:wght@700;800;900&display=swap" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <style>
-    #canvas {
-      display: block;
-      width: min(100%, 440px);
-      height: auto;
-      background: var(--paper);
-      border: 3px solid var(--ink);
-      border-radius: var(--radius);
-      touch-action: none;
-    }
+    #canvas { width: min(100%, 400px); cursor: pointer; }
   </style>
 </head>
-<body style="--box: var(--sea)">
+<body style="--box: var(--lilac)">
 
   <nav class="wrap topbar">
     <a class="wordmark-sm" href="../../index.html">Chromo</a>
@@ -34,33 +26,29 @@
 
   <header class="game-band">
     <div class="wrap">
-      <h1 class="game-name">Snake</h1>
-      <span class="spec">1 player · Ages 6+ · 2–5 min</span>
+      <h1 class="game-name">Glide</h1>
+      <span class="spec">1 player · Ages 5+ · 1 min</span>
     </div>
   </header>
 
   <main class="wrap game-layout">
     <section class="play-area">
       <p class="status" id="status" aria-live="polite">Ready</p>
-      <canvas id="canvas" aria-label="Snake board"></canvas>
-      <div class="actions">
-        <button class="btn" id="restart" type="button">Restart</button>
-        <button class="btn btn-quiet" id="pause" type="button">Pause</button>
-      </div>
+      <canvas class="game-canvas" id="canvas" aria-label="Glide playfield"></canvas>
     </section>
 
     <aside class="game-side">
       <div class="side-group">
         <h2>Score</h2>
         <dl class="scoreboard">
-          <div><dt>This run</dt><dd id="score">0</dd></div>
+          <div><dt>This flight</dt><dd id="score">0</dd></div>
           <div><dt>Best</dt><dd id="best">0</dd></div>
         </dl>
       </div>
       <div class="side-group">
         <h2>Controls</h2>
-        <p>Steer with <kbd>&uarr;</kbd> <kbd>&darr;</kbd> <kbd>&larr;</kbd> <kbd>&rarr;</kbd> or <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd>. On a touchscreen, swipe across the board. <kbd>Space</kbd> pauses.</p>
-        <p>Each red dot is one point. After every fourth dot a gold star appears for a few seconds; it's worth three points and makes you grow faster. The run ends if you hit a wall or your own tail.</p>
+        <p>Click or tap the sky, or press <kbd>Space</kbd> or <kbd>&uarr;</kbd>, to give the plane a lift.</p>
+        <p>Each gap you pass is a point. The gaps get tighter and the towers come faster as your score climbs. Touching a tower or the ground ends the flight.</p>
       </div>
     </aside>
   </main>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<!-- By The_headphones -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Lights · Chromo</title>
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Big+Shoulders+Display:wght@700;800;900&display=swap" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <style>
+    .game-band {
+      color: var(--paper);
+      box-shadow: inset 0 7px 0 rgba(250, 251, 252, 0.16);
+    }
+    .lamp-board {
+      --lamp: clamp(46px, 14vw, 68px);
+      display: grid;
+      grid-template-columns: repeat(5, var(--lamp));
+      gap: clamp(8px, 2.6vw, 14px);
+      padding: clamp(14px, 4vw, 24px);
+      background: var(--ink);
+      border-radius: 10px;
+    }
+    .lamp {
+      width: var(--lamp);
+      height: var(--lamp);
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: #2a3858;
+      box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+      transition: background 140ms ease, box-shadow 140ms ease, transform 80ms ease;
+    }
+    .lamp.is-on {
+      background: var(--mustard);
+      box-shadow: inset 0 -4px 0 rgba(22, 33, 59, 0.2), 0 0 18px rgba(242, 179, 61, 0.55);
+    }
+    .lamp:active:not(:disabled) { transform: scale(0.92); }
+    .lamp:focus-visible { outline: 3px solid var(--paper); outline-offset: 3px; }
+    .lamp-board.is-solved .lamp { cursor: default; }
+  </style>
+</head>
+<body style="--box: var(--ink)">
+
+  <nav class="wrap topbar">
+    <a class="wordmark-sm" href="../../index.html">Chromo</a>
+    <div class="topbar-links">
+      <button class="sound-toggle" id="sound-toggle" type="button">Sound: on</button>
+      <a class="back" href="../../index.html">&larr; Back to the shelf</a>
+    </div>
+  </nav>
+
+  <header class="game-band">
+    <div class="wrap">
+      <h1 class="game-name">Lights</h1>
+      <span class="spec">1 player · Ages 7+ · 5 min</span>
+    </div>
+  </header>
+
+  <main class="wrap game-layout">
+    <section class="play-area">
+      <p class="status" id="status" aria-live="polite">Switch every lamp off</p>
+      <div class="lamp-board" id="board" role="grid" aria-label="Lamps"></div>
+      <div class="actions">
+        <button class="btn" id="next" type="button" disabled>Next puzzle</button>
+        <button class="btn btn-quiet" id="restart" type="button">Start this puzzle again</button>
+      </div>
+    </section>
+
+    <aside class="game-side">
+      <div class="side-group">
+        <h2>Puzzle</h2>
+        <dl class="scoreboard">
+          <div><dt>Number</dt><dd id="puzzle">1</dd></div>
+          <div><dt>Moves</dt><dd id="moves">0</dd></div>
+          <div><dt>Par</dt><dd id="par">3</dd></div>
+        </dl>
+      </div>
+      <div class="side-group">
+        <h2>How to play</h2>
+        <p>Pressing a lamp flips it and the lamps directly above, below, left and right of it. Lit ones go dark and dark ones light up.</p>
+        <p>Turn every lamp off. Par is the number of presses used to set the puzzle, so matching it is good and beating it is better. Each new puzzle takes a few more presses.</p>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="wrap site-footer">
+    <span>Chromo</span>
+    <span>Your puzzle number is saved in this browser.</span>
+  </footer>
+
+  <script src="../../assets/js/sound.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Chromo</title>
-  <meta name="description" content="Three small games that run in your browser: Tic-Tac-Toe, Snake and Memory." />
+  <meta name="description" content="Nine small games that run in your browser: arcade games, table games and puzzles." />
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,40 +16,92 @@
 
   <header class="wrap masthead">
     <h1 class="wordmark">Chromo</h1>
-    <p class="lede">Three small games that run in your browser. Pick one off the shelf. There's nothing to install and no account to make.</p>
+    <p class="lede">Nine small games that run in your browser. Pick one off the shelf. There's nothing to install and no account to make.</p>
   </header>
 
-  <main class="wrap">
-    <section aria-label="Games">
+  <main class="wrap shelves">
+
+    <section aria-label="Arcade games">
       <div class="shelf-row">
-
-        <a class="box box-ttt" href="games/tic-tac-toe/index.html">
-          <span class="spec">2 players · Ages 4+ · 1 min</span>
-          <canvas class="box-demo" data-demo="ttt" data-size="220" aria-hidden="true"></canvas>
-          <span class="box-name">Tic-Tac-Toe</span>
-          <span class="box-blurb">Noughts and crosses for two people sharing one screen. The score carries over between rounds.</span>
-          <span class="box-play">Play</span>
-        </a>
-
-        <a class="box box-snake" href="games/snake/index.html">
+        <a class="box box-md box-snake" href="games/snake/index.html">
           <span class="spec">1 player · Ages 6+ · 2–5 min</span>
-          <canvas class="box-demo" data-demo="snake" data-size="300" aria-hidden="true"></canvas>
+          <canvas class="box-demo" data-demo="snake" data-size="220" aria-hidden="true"></canvas>
           <span class="box-name">Snake</span>
-          <span class="box-blurb">Eat, grow, and keep off the walls. The snake gets a little faster with every dot.</span>
+          <span class="box-blurb">Eat, grow, and keep off the walls. Grab the gold stars before they vanish.</span>
           <span class="box-play">Play</span>
         </a>
+        <a class="box box-lg box-bricks" href="games/bricks/index.html">
+          <span class="spec">1 player · Ages 7+ · 5 min</span>
+          <canvas class="box-demo" data-demo="bricks" data-size="280" aria-hidden="true"></canvas>
+          <span class="box-name">Bricks</span>
+          <span class="box-blurb">Knock out every brick with one ball and a paddle. Chain hits for combo points.</span>
+          <span class="box-play">Play</span>
+        </a>
+        <a class="box box-sm box-glide" href="games/glide/index.html">
+          <span class="spec">1 player · Ages 5+ · 1 min</span>
+          <canvas class="box-demo" data-demo="glide" data-size="184" aria-hidden="true"></canvas>
+          <span class="box-name">Glide</span>
+          <span class="box-blurb">One button. Keep the paper plane in the air and thread the gaps.</span>
+          <span class="box-play">Play</span>
+        </a>
+      </div>
+      <div class="shelf-board spec"><span>Arcade</span><span>3 games</span></div>
+    </section>
 
-        <a class="box box-memory" href="games/memory-match/index.html">
+    <section aria-label="Table and card games">
+      <div class="shelf-row">
+        <a class="box box-lg box-four" href="games/four-in-a-row/index.html">
+          <span class="spec">1–2 players · Ages 6+ · 5 min</span>
+          <canvas class="box-demo" data-demo="four" data-size="280" aria-hidden="true"></canvas>
+          <span class="box-name">Four in a Row</span>
+          <span class="box-blurb">Drop discs, line up four. Play a friend or a computer that looks six moves ahead.</span>
+          <span class="box-play">Play</span>
+        </a>
+        <a class="box box-md box-memory" href="games/memory-match/index.html">
           <span class="spec">1 player · Ages 5+ · 3 min</span>
-          <canvas class="box-demo" data-demo="memory" data-size="184" aria-hidden="true"></canvas>
+          <canvas class="box-demo" data-demo="memory" data-size="220" aria-hidden="true"></canvas>
           <span class="box-name">Memory</span>
           <span class="box-blurb">Sixteen playing cards, eight pairs. Clear the table in as few moves as you can.</span>
           <span class="box-play">Play</span>
         </a>
-
+        <a class="box box-sm box-ttt" href="games/tic-tac-toe/index.html">
+          <span class="spec">1–2 players · Ages 4+ · 1 min</span>
+          <canvas class="box-demo" data-demo="ttt" data-size="184" aria-hidden="true"></canvas>
+          <span class="box-name">Tic-Tac-Toe</span>
+          <span class="box-blurb">Noughts and crosses against a friend, or a computer that never loses on Hard.</span>
+          <span class="box-play">Play</span>
+        </a>
       </div>
-      <div class="shelf-board spec">Shelf 1 · 3 games · Free to play</div>
+      <div class="shelf-board spec"><span>Table and cards</span><span>3 games</span></div>
     </section>
+
+    <section aria-label="Puzzles">
+      <div class="shelf-row">
+        <a class="box box-md box-2048" href="games/2048/index.html">
+          <span class="spec">1 player · Ages 8+ · 10 min</span>
+          <canvas class="box-demo" data-demo="2048" data-size="220" aria-hidden="true"></canvas>
+          <span class="box-name">2048</span>
+          <span class="box-blurb">Slide the tiles, merge equal numbers, and try to build a 2048.</span>
+          <span class="box-play">Play</span>
+        </a>
+        <a class="box box-sm box-lights" href="games/lights/index.html">
+          <span class="spec">1 player · Ages 7+ · 5 min</span>
+          <canvas class="box-demo" data-demo="lights" data-size="184" aria-hidden="true"></canvas>
+          <span class="box-name">Lights</span>
+          <span class="box-blurb">Every lamp you press flips its neighbours too. Switch them all off.</span>
+          <span class="box-play">Play</span>
+        </a>
+        <a class="box box-lg box-mines" href="games/mines/index.html">
+          <span class="spec">1 player · Ages 8+ · 5 min</span>
+          <canvas class="box-demo" data-demo="mines" data-size="280" aria-hidden="true"></canvas>
+          <span class="box-name">Mines</span>
+          <span class="box-blurb">Clear the field using the numbers as clues. Your first dig is always safe.</span>
+          <span class="box-play">Play</span>
+        </a>
+      </div>
+      <div class="shelf-board spec"><span>Puzzles</span><span>3 games</span></div>
+    </section>
+
   </main>
 
   <footer class="wrap site-footer">

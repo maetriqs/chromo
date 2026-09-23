@@ -102,7 +102,10 @@
 
   <nav class="wrap topbar">
     <a class="wordmark-sm" href="../../index.html">Chromo</a>
-    <a class="back" href="../../index.html">&larr; Back to the shelf</a>
+    <div class="topbar-links">
+      <button class="sound-toggle" id="sound-toggle" type="button">Sound: on</button>
+      <a class="back" href="../../index.html">&larr; Back to the shelf</a>
+    </div>
   </nav>
 
   <header class="game-band">
@@ -138,7 +141,7 @@
       </div>
       <div class="side-group">
         <h2>How to play</h2>
-        <p>Turn over two cards per move. A matching pair stays face up; anything else flips back. The clock starts on your first card.</p>
+        <p>Turn over two cards per move. A matching pair stays face up; anything else flips back. Find pairs back to back to build a streak. The clock starts on your first card.</p>
       </div>
     </aside>
   </main>
@@ -148,6 +151,7 @@
     <span>Your best game is saved in this browser.</span>
   </footer>
 
+  <script src="../../assets/js/sound.js"></script>
   <script src="game.js"></script>
 </body>
 </html>

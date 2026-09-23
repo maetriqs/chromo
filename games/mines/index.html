@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<!-- By The_headphones -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Mines · Chromo</title>
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Big+Shoulders+Display:wght@700;800;900&display=swap" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <style>
+    .field-scroll {
+      max-width: 100%;
+      overflow-x: auto;
+      padding: 4px;
+    }
+    .field {
+      --cell: 36px;
+      display: grid;
+      grid-template-columns: repeat(var(--cols), var(--cell));
+      gap: 3px;
+      width: max-content;
+      margin-inline: auto;
+    }
+    .field[data-size="12"] { --cell: 30px; }
+    .field[data-size="16"] { --cell: 26px; }
+    @media (max-width: 480px) {
+      .field { --cell: 32px; }
+      .field[data-size="12"] { --cell: 25px; }
+      .field[data-size="16"] { --cell: 19px; gap: 2px; }
+    }
+    .mine-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--cell);
+      height: var(--cell);
+      padding: 0;
+      border: 0;
+      border-radius: 3px;
+      background: var(--lime);
+      box-shadow: inset 0 -3px 0 rgba(22, 33, 59, 0.22);
+      color: var(--ink);
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: calc(var(--cell) * 0.66);
+      line-height: 1;
+      cursor: pointer;
+    }
+    .mine-cell:hover:not(.is-open) { background: #bad26a; }
+    .mine-cell.is-open {
+      background: var(--paper);
+      box-shadow: none;
+      cursor: default;
+    }
+    .mine-cell.is-boom { background: var(--tomato); }
+    .mine-cell.is-wrong { background: var(--ground-deep); }
+    .mine-cell svg { width: 70%; height: 70%; }
+    .mine-cell[data-n="1"] { color: #2f6db5; }
+    .mine-cell[data-n="2"] { color: #1d6b45; }
+    .mine-cell[data-n="3"] { color: #c23b22; }
+    .mine-cell[data-n="4"] { color: #16213b; }
+    .mine-cell[data-n="5"] { color: #8a3b12; }
+    .mine-cell[data-n="6"] { color: #13867f; }
+    .mine-cell[data-n="7"],
+    .mine-cell[data-n="8"] { color: #4a5670; }
+    .field.is-over .mine-cell { cursor: default; }
+  </style>
+</head>
+<body style="--box: var(--lime)">
+
+  <nav class="wrap topbar">
+    <a class="wordmark-sm" href="../../index.html">Chromo</a>
+    <div class="topbar-links">
+      <button class="sound-toggle" id="sound-toggle" type="button">Sound: on</button>
+      <a class="back" href="../../index.html">&larr; Back to the shelf</a>
+    </div>
+  </nav>
+
+  <header class="game-band">
+    <div class="wrap">
+      <h1 class="game-name">Mines</h1>
+      <span class="spec">1 player · Ages 8+ · 5 min</span>
+    </div>
+  </header>
+
+  <main class="wrap game-layout">
+    <section class="play-area">
+      <p class="status" id="status" aria-live="polite">Dig anywhere to start</p>
+      <div class="field-scroll">
+        <div class="field" id="field" role="grid" aria-label="Minefield"></div>
+      </div>
+      <div class="actions">
+        <div class="segmented" id="tool" role="group" aria-label="Tool">
+          <button type="button" data-tool="dig" aria-pressed="true">Dig</button>
+          <button type="button" data-tool="flag" aria-pressed="false">Flag</button>
+        </div>
+        <button class="btn" id="new-game" type="button">New field</button>
+      </div>
+    </section>
+
+    <aside class="game-side">
+      <div class="side-group">
+        <h2>Field size</h2>
+        <div class="segmented" id="level" role="group" aria-label="Field size">
+          <button type="button" data-level="easy" aria-pressed="true">9 × 9</button>
+          <button type="button" data-level="medium" aria-pressed="false">12 × 12</button>
+          <button type="button" data-level="hard" aria-pressed="false">16 × 16</button>
+        </div>
+      </div>
+      <div class="side-group">
+        <h2>This field</h2>
+        <dl class="scoreboard">
+          <div><dt>Mines left</dt><dd id="mines-left">10</dd></div>
+          <div><dt>Time</dt><dd id="timer">0:00</dd></div>
+          <div><dt>Best</dt><dd id="best">&ndash;</dd></div>
+        </dl>
+      </div>
+      <div class="side-group">
+        <h2>How to play</h2>
+        <p>Each number tells you how many of the eight squares around it hide a mine. Uncover every safe square to win. Your first dig never hits a mine.</p>
+        <p>Right-click, or switch to Flag, to mark a mine. Click an uncovered number whose mines are all flagged to open its other neighbours at once. With the keyboard, press <kbd>F</kbd> to flag the focused square.</p>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="wrap site-footer">
+    <span>Chromo</span>
+    <span>Best times for each size are saved in this browser.</span>
+  </footer>
+
+  <script src="../../assets/js/sound.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

@@ -1,13 +1,26 @@
 # Chromo
 
 A static browser-games site: plain HTML, CSS and vanilla JS, no build step.
-The home page is a "shelf" of game boxes, each with a small self-playing preview.
+The home page is a set of shelves of game boxes, each with a small self-playing preview.
 
 ## Games
 
-- **Tic-Tac-Toe** (`games/tic-tac-toe/`): two players on one screen, score kept across rounds.
-- **Snake** (`games/snake/`): keyboard or swipe controls, best score saved in `localStorage`.
-- **Memory** (`games/memory-match/`): eight pairs of playing cards, with a move count, a timer and a saved best.
+**Arcade**
+- **Snake** (`games/snake/`): keyboard or swipe controls, timed bonus stars, saved best score.
+- **Bricks** (`games/bricks/`): paddle-and-ball brick breaker with combos, a wide-paddle power-up and endless levels.
+- **Glide** (`games/glide/`): one-button paper plane that speeds up as you score.
+
+**Table and cards**
+- **Four in a Row** (`games/four-in-a-row/`): vs a friend, or a computer (easy, or hard with a six-move alpha-beta search).
+- **Memory** (`games/memory-match/`): eight pairs of playing cards, streaks, move count, timer and saved best.
+- **Tic-Tac-Toe** (`games/tic-tac-toe/`): vs a friend, or a computer (easy, or hard with perfect minimax play).
+
+**Puzzles**
+- **2048** (`games/2048/`): animated sliding tiles, swipe support and one-step undo.
+- **Lights** (`games/lights/`): lights-out puzzles that get longer as you progress, scored against par.
+- **Mines** (`games/mines/`): three field sizes, a safe first dig, flag mode for touchscreens and chording.
+
+Every game page has a sound toggle. Effects are synthesized with the Web Audio API, so there are no audio files.
 
 ## Running locally
 
@@ -22,9 +35,10 @@ with system fallbacks when offline.
 ## Structure
 
 ```
-index.html                  Home page (the shelf)
-assets/css/styles.css       Shared tokens, type and layout
+index.html                  Home page (the shelves)
+assets/css/styles.css       Shared tokens, type, layout and controls
 assets/js/shelf.js          Self-playing previews on the home page boxes
+assets/js/sound.js          Shared sound effects and the Sound on/off toggle
 assets/img/favicon.svg      Site icon
 games/<game>/index.html     Game page
 games/<game>/game.js        Game logic
@@ -33,7 +47,9 @@ games/<game>/game.js        Game logic
 ## Adding a game
 
 1. Copy a `games/<game>/` folder and rename it.
-2. Set the box colour on the page's `<body>`, e.g. `style="--box: var(--sea)"`, or add a new colour token in `styles.css`.
-3. Add an `<a class="box">` to the shelf in `index.html` with the game's spec line, name and blurb.
-4. For a live preview, add a demo function in `assets/js/shelf.js`, register it in `DEMOS`,
+2. Set the box colour on the page's `<body>`, e.g. `style="--box: var(--sea)"`, or add a colour token in `styles.css`.
+3. Add an `<a class="box box-md box-yourgame">` to a shelf in `index.html` with the spec line, name and blurb,
+   and give `.box-yourgame` its `--box` colour in `styles.css`. Use `box-sm`, `box-md` or `box-lg` for the box size.
+4. For a live preview, add a demo function to `assets/js/shelf.js`, register it in `DEMOS`,
    and point a `<canvas data-demo="...">` at it. Otherwise drop the canvas.
+5. Call `Sound.play("pop")` and the other effects in `sound.js` from your game for audio.
