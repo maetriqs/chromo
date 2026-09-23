@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<!-- By The_headphones -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snake · Chromo Arcade</title>
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <style>
+    #canvas {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      image-rendering: pixelated;
+      touch-action: none;
+    }
+    .overlay-msg {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body style="--game-accent:#7ac97e">
+
+  <header class="game-header">
+    <div class="wrap">
+      <a class="back-link" href="../../index.html">&larr; All games</a>
+      <div class="game-title">
+        <span class="game-swatch"></span>
+        <h1>Snake</h1>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="game-shell">
+
+      <div class="board-panel">
+        <p class="status-line" id="status" aria-live="polite">Press an arrow key to start</p>
+        <canvas id="canvas" width="400" height="400"></canvas>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="restart">Restart</button>
+          <button class="btn" id="pause">Pause</button>
+        </div>
+      </div>
+
+      <div class="side-panel">
+        <div class="stat-block">
+          <h3>Score</h3>
+          <div class="stat-row"><span>Current</span><span id="score">0</span></div>
+          <div class="stat-row"><span>Best</span><span id="best">0</span></div>
+        </div>
+        <div class="stat-block">
+          <h3>Controls</h3>
+          <p class="controls-hint">
+            Move with <kbd>&uarr;</kbd> <kbd>&darr;</kbd> <kbd>&larr;</kbd> <kbd>&rarr;</kbd> or <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd>.<br />
+            <kbd>Space</kbd> to pause. Hitting a wall or yourself ends the run.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>Chromo Arcade</span>
+      <span>Single player &middot; Keyboard</span>
+    </div>
+  </footer>
+
+  <script src="game.js"></script>
+</body>
+</html>

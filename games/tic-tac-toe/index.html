@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<!-- By The_headphones -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tic-Tac-Toe · Chromo Arcade</title>
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <style>
+    .ttt-board {
+      display: grid;
+      grid-template-columns: repeat(3, 84px);
+      grid-template-rows: repeat(3, 84px);
+      gap: 6px;
+    }
+    .ttt-cell {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 2.2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text);
+      transition: border-color 120ms ease, background 120ms ease;
+    }
+    .ttt-cell:hover:not(:disabled) {
+      border-color: var(--game-accent);
+    }
+    .ttt-cell:disabled {
+      cursor: default;
+    }
+    .ttt-cell[data-mark="X"] { color: var(--game-accent); }
+    .ttt-cell[data-mark="O"] { color: var(--accent); }
+    .ttt-cell.is-winning {
+      background: var(--surface);
+      border-color: var(--success);
+    }
+  </style>
+</head>
+<body style="--game-accent:#5ec8d8">
+
+  <header class="game-header">
+    <div class="wrap">
+      <a class="back-link" href="../../index.html">&larr; All games</a>
+      <div class="game-title">
+        <span class="game-swatch"></span>
+        <h1>Tic-Tac-Toe</h1>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="game-shell">
+
+      <div class="board-panel">
+        <p class="status-line" id="status" aria-live="polite">X's turn</p>
+        <div class="ttt-board" id="board" role="grid" aria-label="Tic-tac-toe board"></div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="reset-round">New round</button>
+          <button class="btn" id="reset-score">Reset score</button>
+        </div>
+      </div>
+
+      <div class="side-panel">
+        <div class="stat-block">
+          <h3>Score</h3>
+          <div class="stat-row"><span>X wins</span><span id="score-x">0</span></div>
+          <div class="stat-row"><span>O wins</span><span id="score-o">0</span></div>
+          <div class="stat-row"><span>Draws</span><span id="score-d">0</span></div>
+        </div>
+        <div class="stat-block">
+          <h3>How to play</h3>
+          <p class="controls-hint">Two players share this screen. Click an empty square to place your mark. Get three in a row — across, down, or diagonal — to win the round.</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>Chromo Arcade</span>
+      <span>Hotseat &middot; 2 players</span>
+    </div>
+  </footer>
+
+  <script src="game.js"></script>
+</body>
+</html>

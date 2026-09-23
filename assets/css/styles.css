@@ -1,0 +1,454 @@
+/*
+  Chromo Arcade — shared styles
+  By The_headphones
+*/
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: local("JetBrains Mono");
+  font-display: swap;
+}
+
+:root {
+  --bg: #0b0c0e;
+  --surface: #131519;
+  --surface-alt: #1a1d22;
+  --border: #2a2e35;
+  --text: #e9e8e4;
+  --text-muted: #9a9ea6;
+
+  --accent: #ff8a3d;
+  --accent-hover: #ffa361;
+  --accent-ink: #1a0f06;
+
+  --danger: #e0554f;
+  --success: #6bc97e;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --max-width: 1100px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0 0 var(--space-2);
+}
+
+p {
+  margin: 0 0 var(--space-3);
+  color: var(--text-muted);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.wrap {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-5);
+}
+
+/* Header */
+
+.site-header {
+  border-bottom: 1px solid var(--border);
+  padding: var(--space-4) 0;
+}
+
+.site-header .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.logo-mark {
+  display: block;
+  width: 22px;
+  height: 22px;
+  flex: none;
+}
+
+.site-nav {
+  display: flex;
+  gap: var(--space-5);
+  font-size: 0.9rem;
+}
+
+.site-nav a {
+  text-decoration: none;
+  color: var(--text-muted);
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid transparent;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+
+.site-nav a:hover,
+.site-nav a.is-active {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+/* Hero */
+
+.hero {
+  padding: var(--space-8) 0 var(--space-7);
+  border-bottom: 1px solid var(--border);
+}
+
+.hero h1 {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  max-width: 34ch;
+}
+
+.hero p {
+  max-width: 52ch;
+  font-size: 1.05rem;
+}
+
+.hero .eyebrow {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: var(--space-3);
+}
+
+/* Game grid */
+
+.section {
+  padding: var(--space-7) 0;
+}
+
+.section-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+  gap: var(--space-3);
+}
+
+.section-title h2 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.section-title .count {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-5);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--card-accent, var(--border));
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.card-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--card-accent, var(--text-muted));
+}
+
+.card h3 {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.card p {
+  margin: 0;
+  font-size: 0.92rem;
+  flex: 1;
+}
+
+.tag-row {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+}
+
+.card-play {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-top: var(--space-2);
+}
+
+.card-play svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 120ms ease;
+}
+
+.card-play:hover svg {
+  transform: translateX(3px);
+}
+
+/* Buttons */
+
+.btn {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.btn:hover {
+  border-color: var(--text-muted);
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+/* Game shell */
+
+.game-header {
+  padding: var(--space-5) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.game-header .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.back-link {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.back-link:hover {
+  color: var(--text);
+}
+
+.game-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.game-title h1 {
+  font-size: 1.15rem;
+  margin: 0;
+}
+
+.game-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--game-accent, var(--accent));
+  flex: none;
+}
+
+.game-shell {
+  padding: var(--space-7) 0 var(--space-8);
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(220px, 280px);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .game-shell {
+    grid-template-columns: 1fr;
+  }
+}
+
+.board-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.stat-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.stat-block h3 {
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  padding: var(--space-1) 0;
+}
+
+.stat-row span:last-child {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.status-line {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  min-height: 1.4em;
+  text-align: center;
+}
+
+.status-line.is-win {
+  color: var(--success);
+}
+
+.status-line.is-danger {
+  color: var(--danger);
+}
+
+.controls-hint {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.controls-hint kbd {
+  font-family: var(--font-mono);
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-size: 0.78rem;
+}
+
+.btn-row {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* Footer */
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: var(--space-5) 0;
+  margin-top: var(--space-7);
+}
+
+.site-footer .wrap {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}

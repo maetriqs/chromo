@@ -1,0 +1,6 @@
+<!-- By The_headphones -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <rect width="24" height="24" rx="5" fill="#131519"/>
+  <path d="M12 3 L21 12 L12 21 L3 12 Z" fill="none" stroke="#ff8a3d" stroke-width="2"/>
+  <circle cx="12" cy="12" r="3" fill="#ff8a3d"/>
+</svg>

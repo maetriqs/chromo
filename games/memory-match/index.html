@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<!-- By The_headphones -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Match · Chromo Arcade</title>
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <style>
+    .memory-board {
+      display: grid;
+      grid-template-columns: repeat(4, 72px);
+      grid-template-rows: repeat(4, 72px);
+      gap: 8px;
+    }
+    .memory-card {
+      position: relative;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      perspective: 600px;
+    }
+    .memory-card-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius-sm);
+      transition: transform 220ms ease;
+      transform-style: preserve-3d;
+      position: relative;
+    }
+    .memory-card.is-flipped .memory-card-inner,
+    .memory-card.is-matched .memory-card-inner {
+      transform: rotateY(180deg);
+    }
+    .memory-face {
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backface-visibility: hidden;
+      border: 1px solid var(--border);
+    }
+    .memory-face-back {
+      background: var(--surface-alt);
+    }
+    .memory-face-back::after {
+      content: "?";
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      font-size: 1.2rem;
+    }
+    .memory-face-front {
+      background: var(--surface);
+      transform: rotateY(180deg);
+      font-size: 1.8rem;
+    }
+    .memory-card.is-matched .memory-face-front {
+      border-color: var(--success);
+    }
+    .memory-card:disabled {
+      cursor: default;
+    }
+  </style>
+</head>
+<body style="--game-accent:#c98bf0">
+
+  <header class="game-header">
+    <div class="wrap">
+      <a class="back-link" href="../../index.html">&larr; All games</a>
+      <div class="game-title">
+        <span class="game-swatch"></span>
+        <h1>Memory Match</h1>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="game-shell">
+
+      <div class="board-panel">
+        <p class="status-line" id="status" aria-live="polite">Flip two cards to begin</p>
+        <div class="memory-board" id="board"></div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="restart">New game</button>
+        </div>
+      </div>
+
+      <div class="side-panel">
+        <div class="stat-block">
+          <h3>Progress</h3>
+          <div class="stat-row"><span>Moves</span><span id="moves">0</span></div>
+          <div class="stat-row"><span>Time</span><span id="timer">0:00</span></div>
+          <div class="stat-row"><span>Pairs</span><span id="pairs">0 / 8</span></div>
+        </div>
+        <div class="stat-block">
+          <h3>How to play</h3>
+          <p class="controls-hint">Flip two cards at a time. If the symbols match, they stay face up. Clear all 8 pairs in as few moves as possible.</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>Chromo Arcade</span>
+      <span>Single player &middot; Mouse</span>
+    </div>
+  </footer>
+
+  <script src="game.js"></script>
+</body>
+</html>

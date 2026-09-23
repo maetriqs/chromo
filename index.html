@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<!-- By The_headphones -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chromo Arcade</title>
+  <meta name="description" content="A small collection of free browser games. No installs, no accounts." />
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="wrap">
+      <a class="logo" href="index.html">
+        <svg class="logo-mark" viewBox="0 0 24 24" aria-hidden="true">
+          <rect width="24" height="24" rx="5" fill="#131519"/>
+          <path d="M12 3 L21 12 L12 21 L3 12 Z" fill="none" stroke="#ff8a3d" stroke-width="2"/>
+          <circle cx="12" cy="12" r="3" fill="#ff8a3d"/>
+        </svg>
+        CHROMO ARCADE
+      </a>
+      <nav class="site-nav">
+        <a href="index.html" class="is-active">Home</a>
+        <a href="#games">Games</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap">
+      <span class="eyebrow">Browser games / vanilla JS</span>
+      <h1>Small games, loaded straight from the page.</h1>
+      <p>No downloads, no sign-ups, no ads. Pick a game below and it starts instantly — everything here runs client-side in plain HTML, CSS and JavaScript.</p>
+    </div>
+  </section>
+
+  <section class="section" id="games">
+    <div class="wrap">
+      <div class="section-title">
+        <h2>Games</h2>
+        <span class="count">3 available</span>
+      </div>
+
+      <div class="game-grid">
+
+        <article class="card" style="--card-accent:#5ec8d8">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <path d="M9 3v18M15 3v18M3 9h18M3 15h18"/>
+          </svg>
+          <h3>Tic-Tac-Toe</h3>
+          <p>Classic two-player hotseat. First to three in a row wins; the board tracks the score across rounds.</p>
+          <div class="tag-row">
+            <span class="tag">2 players</span>
+            <span class="tag">Local</span>
+          </div>
+          <a class="card-play" href="games/tic-tac-toe/index.html">
+            Play
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3l5 5-5 5"/></svg>
+          </a>
+        </article>
+
+        <article class="card" style="--card-accent:#7ac97e">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M4 10h4v4H4zM8 6h4v4H8zM12 6h4v4h-4zM16 10h4v4h-4zM4 14h12v4H4z"/>
+          </svg>
+          <h3>Snake</h3>
+          <p>Steer with the arrow keys, eat the dots, don't hit the walls or yourself. Speed climbs as you grow.</p>
+          <div class="tag-row">
+            <span class="tag">1 player</span>
+            <span class="tag">Keyboard</span>
+          </div>
+          <a class="card-play" href="games/snake/index.html">
+            Play
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3l5 5-5 5"/></svg>
+          </a>
+        </article>
+
+        <article class="card" style="--card-accent:#c98bf0">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+          <h3>Memory Match</h3>
+          <p>Flip two cards at a time and clear the board in as few moves as possible. Timer starts on your first flip.</p>
+          <div class="tag-row">
+            <span class="tag">1 player</span>
+            <span class="tag">Mouse</span>
+          </div>
+          <a class="card-play" href="games/memory-match/index.html">
+            Play
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3l5 5-5 5"/></svg>
+          </a>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>Chromo Arcade — static site, no backend.</span>
+      <span>Built with HTML, CSS &amp; vanilla JS.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
