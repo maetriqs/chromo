@@ -986,7 +986,101 @@ function tiltDemo(canvas) {
   run({ step, draw }, 45, 12);
 }
 
+// Top-down battle royale: players scatter, the storm closes, the last dot standing wins.
+function squallDemo(canvas) {
+  const { ctx, size } = setup(canvas);
+  const C = size / 2;
+  const island = Array.from({ length: 40 }, (_, i) => 0.82 + Math.sin(i * 1.7) * 0.05 + Math.cos(i * 0.9) * 0.04);
+  let players, storm, t, hold;
+
+  function reset() {
+    players = Array.from({ length: 16 }, () => {
+      const a = Math.random() * Math.PI * 2;
+      const r = Math.sqrt(Math.random()) * 0.7;
+      return { x: Math.cos(a) * r, y: Math.sin(a) * r, vx: 0, vy: 0, alive: true, flash: 0 };
+    });
+    storm = { x: 0, y: 0, r: 1.05, tx: (Math.random() - 0.5) * 0.4, ty: (Math.random() - 0.5) * 0.4 };
+    t = 0;
+    hold = 0;
+  }
+
+  function step() {
+    t += 1;
+    const alive = players.filter((p) => p.alive);
+    if (alive.length <= 1) {
+      hold += 1;
+      if (hold > 30) reset();
+      return;
+    }
+    storm.r = Math.max(0.12, storm.r - 0.0035);
+    storm.x += (storm.tx - storm.x) * 0.01;
+    storm.y += (storm.ty - storm.y) * 0.01;
+    alive.forEach((p) => {
+      const dx = storm.x - p.x;
+      const dy = storm.y - p.y;
+      const d = Math.hypot(dx, dy) || 1;
+      const pull = d > storm.r * 0.7 ? 0.004 : 0;
+      p.vx = p.vx * 0.9 + (Math.random() - 0.5) * 0.003 + (dx / d) * pull;
+      p.vy = p.vy * 0.9 + (Math.random() - 0.5) * 0.003 + (dy / d) * pull;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.flash = Math.max(0, p.flash - 1);
+      if (d > storm.r + 0.03 && Math.random() < 0.02) p.alive = false;
+    });
+    if (Math.random() < 0.08) {
+      const a = alive[rand(alive.length)];
+      const b = alive.filter((o) => o !== a).sort((m, n) => Math.hypot(m.x - a.x, m.y - a.y) - Math.hypot(n.x - a.x, n.y - a.y))[0];
+      if (b && Math.hypot(b.x - a.x, b.y - a.y) < 0.35) {
+        a.flash = 3;
+        if (Math.random() < 0.35) b.alive = false;
+      }
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, size, size);
+    ctx.fillStyle = "#6f9f4a";
+    ctx.beginPath();
+    island.forEach((r, i) => {
+      const a = (i / island.length) * Math.PI * 2;
+      const x = C + Math.cos(a) * r * C;
+      const y = C + Math.sin(a) * r * C;
+      if (i) ctx.lineTo(x, y);
+      else ctx.moveTo(x, y);
+    });
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "rgba(10, 60, 52, 0.55)";
+    ctx.beginPath();
+    ctx.rect(0, 0, size, size);
+    ctx.arc(C + storm.x * C, C + storm.y * C, storm.r * C, 0, Math.PI * 2, true);
+    ctx.fill("evenodd");
+    ctx.strokeStyle = "#9ff5df";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(C + storm.x * C, C + storm.y * C, storm.r * C, 0, Math.PI * 2);
+    ctx.stroke();
+    players.forEach((p, i) => {
+      if (!p.alive) return;
+      ctx.fillStyle = i === 0 ? "#ffe066" : "#fafbfc";
+      ctx.beginPath();
+      ctx.arc(C + p.x * C, C + p.y * C, i === 0 ? 4 : 3, 0, Math.PI * 2);
+      ctx.fill();
+      if (p.flash) {
+        ctx.fillStyle = "#ffb84a";
+        ctx.beginPath();
+        ctx.arc(C + p.x * C, C + p.y * C, 7, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
+  }
+
+  reset();
+  run({ step, draw }, 60, 40);
+}
+
 const DEMOS = {
+  squall: squallDemo,
   stack: stackDemo,
   dash: dashDemo,
   tilt: tiltDemo,

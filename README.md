@@ -5,6 +5,9 @@ The home page is a set of shelves of game boxes, each with a small self-playing 
 
 ## Games
 
+**Battle royale**
+- **Squall** (`games/squall/`): an original third-person battle royale on Kestrel Isle. See [Squall](#squall) below.
+
 **3D** (rendered with Three.js)
 - **Stack** (`games/stack/`): drop sliding blocks to build a tower; overhangs are sliced off, and perfect drops chain and regrow the block.
 - **Dash** (`games/dash/`): three-lane runner with jumps, fast-drops, coins and rising speed.
@@ -54,6 +57,58 @@ assets/img/favicon.svg      Site icon
 games/<game>/index.html     Game page
 games/<game>/game.js        Game logic
 ```
+
+## Squall
+
+A complete battle royale match against 5–27 bots (19 by default). All of its models, the island, the UI and
+every sound are original and generated in code. The only dependency is the vendored Three.js.
+
+**Match loop.** Skydive from 150 m and steer, open the glider, then land and loot. Fight, build, and stay inside
+the safe zone through six storm phases until one player is left. The result screen shows your placement,
+eliminations, damage, survival time and pieces built, with Play again.
+
+**Systems**
+- **Island:** a heightfield island with six points of interest: Millbrook (town), Rustworks (industrial),
+  Pinewood (forest), Highridge (hills, with a lookout tower), Barley Flats (fields, barn and silo) and
+  Hollowstead (abandoned ruins). Roads, about 430 harvestable trees, rocks, hay bales, cars, containers and
+  explosive barrels. House roofs and ramps are walkable.
+- **Weapons:** Corsair AR, Breaker 12 (shotgun), Wasp SMG, Marlin P9 (pistol) and Longreach (scoped sniper).
+  Each has its own damage, fire rate, magazine, reload, range and falloff, spread and bloom, and recoil.
+  Rarity (Common to Legendary) scales damage, reload speed and accuracy. Hitscan includes headshots.
+  Shots damage structures and can detonate barrels.
+- **Loot:** 25 chests and about 60 floor-loot spots, re-rolled every match, with rarity-coloured light beams.
+  Ammo (light, medium, shells, heavy) and timber are picked up just by walking over them. Healing items are
+  the Patch Kit and Field Kit; shield items are the Shield Cell and Shield Flask. Eliminated players drop
+  everything they carried.
+- **Building:** walls, floors, ramps and roofs on a 4 m grid, with a vertical lattice so ramps chain upward.
+  Ghost preview, placement validation, a 10-timber cost, a build cooldown, and pieces that grow their HP over
+  about a second. Pieces block bullets, take damage and break. The hatchet harvests timber from trees, rocks,
+  hay, crates and cars.
+- **Storm:** six phases, each with a wait timer and a shrink. Every safe zone sits inside the previous one.
+  Damage per second rises from 1 to 10 and bypasses shields. The storm wall, the next-zone ring on the ground,
+  the screen tint, fog and audio all react.
+- **Bots:** four skill tiers (Rookie, Regular, Veteran, Ace) differ in reaction time, aim error, fire rate,
+  detection range, strafing, jumping and wall-building. Each bot also has its own caution and favourite area.
+  Bots loot and judge upgrades, heal, rotate ahead of the storm, hear gunfire, chase, and fight each other as
+  well as you.
+- **Camera:** an over-the-shoulder third-person camera with smoothing, collision pull-in, ADS zoom, a
+  first-person scope on the sniper, recoil with recovery, and shake.
+- **UI:** a minimap with the storm and gunfire pings, a full map in the inventory, health and shield bars,
+  timber, a hotbar, ammo, the storm timer, player count, eliminations, a kill feed, hit markers, damage numbers,
+  damage-direction indicators and interaction prompts. Screens: loading, main menu, settings (sensitivity,
+  invert, FOV, quality, volume, bot skill and count, full key rebinding), controls, credits, pause, inventory,
+  victory and defeat.
+
+**Default controls:** WASD move · Shift sprint · Space jump / open glider · C crouch · Mouse look and aim ·
+Left click fire / build / use · Right click aim · R reload · 1–5 slots · Q build mode · Z wall · X floor ·
+C ramp (in build mode) · V roof · E interact · Tab inventory · Esc pause.
+
+**Code** (`games/squall/js/`, plain scripts sharing one `SQ` namespace, loaded in order by `index.html`):
+`config` tuning tables · `util` math, noise, geometry merging · `settings` · `input` keyboard, mouse, pointer
+lock · `audio` synthesized sound · `terrain` · `physics` colliders, movement, raycasts · `world` island
+content · `effects` particles, tracers, flashes, damage numbers · `inventory` items · `character` models and
+animation · `weapons` · `loot` · `building` · `storm` · `camera` · `player` · `bots` · `hud` · `menus` ·
+`game` match lifecycle and main loop · `main` boot.
 
 ## Adding a game
 

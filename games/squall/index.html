@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<!-- By The_headphones -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Squall</title>
+  <meta name="description" content="Squall: an original browser battle royale on Kestrel Isle. Loot, build, outlast the storm." />
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Big+Shoulders+Display:wght@600;800;900&display=swap" />
+  <link rel="stylesheet" href="css/squall.css" />
+</head>
+<body>
+  <div id="stage"></div>
+
+  <!-- HUD -->
+  <div id="hud" hidden>
+    <div id="storm-vignette"></div>
+    <div id="damage-vignette"></div>
+    <div id="scope" hidden><div class="scope-ring"></div></div>
+    <div id="dmg-layer"></div>
+    <div id="dmg-indicators"></div>
+
+    <div id="crosshair">
+      <i class="ch-line ch-top"></i><i class="ch-line ch-bottom"></i><i class="ch-line ch-left"></i><i class="ch-line ch-right"></i><i class="ch-dot"></i>
+    </div>
+    <div id="hitmarker"><i></i><i></i><i></i><i></i></div>
+    <div id="structure-bar" hidden><span></span></div>
+    <div id="progress" hidden>
+      <svg viewBox="0 0 44 44"><circle class="track" cx="22" cy="22" r="18" /><circle class="fill" cx="22" cy="22" r="18" /></svg>
+      <span id="progress-label"></span>
+    </div>
+    <div id="prompt" hidden><kbd id="prompt-key">E</kbd><span id="prompt-verb"></span><strong id="prompt-label"></strong><em id="prompt-rarity"></em></div>
+
+    <div id="announce" hidden></div>
+    <div id="toast-stack"></div>
+    <ol id="killfeed"></ol>
+
+    <div id="topright">
+      <div id="map-frame"><canvas id="minimap" width="200" height="200"></canvas></div>
+      <div id="match-strip">
+        <div class="strip-item"><span class="strip-label">Storm</span><strong id="storm-timer">0:00</strong></div>
+        <div class="strip-item"><span class="strip-label">Alive</span><strong id="alive-count">20</strong></div>
+        <div class="strip-item"><span class="strip-label">Elims</span><strong id="elim-count">0</strong></div>
+      </div>
+      <p id="storm-label">Storm forming</p>
+    </div>
+
+    <div id="vitals">
+      <div class="vital-row">
+        <span class="vital-icon shield-icon"></span>
+        <div class="bar" id="shield-bar"><span></span><i></i><i></i><i></i></div>
+        <strong id="shield-num">0</strong>
+      </div>
+      <div class="vital-row">
+        <span class="vital-icon health-icon"></span>
+        <div class="bar" id="health-bar"><span></span><i></i><i></i><i></i></div>
+        <strong id="health-num">100</strong>
+      </div>
+      <div id="mats"><span class="mats-icon"></span><strong id="mats-count">0</strong><span class="mats-label">Timber</span></div>
+    </div>
+
+    <div id="loadout">
+      <div id="ammo">
+        <div id="weapon-name"></div>
+        <div id="ammo-numbers"><strong id="ammo-mag"></strong><span id="ammo-reserve"></span></div>
+      </div>
+      <div id="hotbar"></div>
+      <div id="buildbar" hidden></div>
+    </div>
+
+    <div id="fps" hidden></div>
+    <div id="spectate" hidden></div>
+  </div>
+
+  <!-- Screens -->
+  <section class="screen" id="screen-loading">
+    <div class="loading-inner">
+      <h1 class="wordmark">Squall</h1>
+      <div class="loading-bar"><span id="loading-fill"></span></div>
+      <p id="loading-step">Raising Kestrel Isle</p>
+    </div>
+  </section>
+
+  <section class="screen menu-screen" id="screen-menu" hidden>
+    <div class="menu-col">
+      <h1 class="wordmark">Squall</h1>
+      <p class="tagline">Drop onto Kestrel Isle. Loot, build, and be the last one standing when the squall closes.</p>
+      <nav class="menu-list">
+        <button class="menu-item primary" data-action="play">Play</button>
+        <button class="menu-item" data-action="settings">Settings</button>
+        <button class="menu-item" data-action="controls">Controls</button>
+        <button class="menu-item" data-action="credits">Credits</button>
+        <a class="menu-item small" href="../../index.html">Back to the Chromo shelf</a>
+      </nav>
+    </div>
+    <aside class="menu-meta">
+      <dl>
+        <div><dt>Players</dt><dd id="meta-players">20</dd></div>
+        <div><dt>Bots</dt><dd id="meta-skill">Mixed</dd></div>
+        <div><dt>Best</dt><dd id="meta-best">—</dd></div>
+      </dl>
+    </aside>
+  </section>
+
+  <section class="screen panel-screen" id="screen-settings" hidden>
+    <div class="panel">
+      <header class="panel-head"><h2>Settings</h2><button class="text-btn" data-back>Back</button></header>
+      <div class="settings-grid">
+        <section>
+          <h3>Mouse</h3>
+          <label class="field"><span>Look sensitivity</span><input type="range" id="set-sensitivity" min="0.2" max="3" step="0.05" /><output id="out-sensitivity"></output></label>
+          <label class="field"><span>Aim sensitivity (ADS)</span><input type="range" id="set-adsSensitivity" min="0.2" max="1.5" step="0.05" /><output id="out-adsSensitivity"></output></label>
+          <label class="field check"><span>Invert vertical look</span><input type="checkbox" id="set-invertY" /></label>
+          <h3>View</h3>
+          <label class="field"><span>Field of view</span><input type="range" id="set-fov" min="60" max="100" step="1" /><output id="out-fov"></output></label>
+          <label class="field"><span>Graphics quality</span>
+            <select id="set-quality"><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select>
+          </label>
+          <label class="field check"><span>Show frame rate</span><input type="checkbox" id="set-showFps" /></label>
+          <h3>Sound</h3>
+          <label class="field"><span>Master volume</span><input type="range" id="set-volume" min="0" max="1" step="0.05" /><output id="out-volume"></output></label>
+          <h3>Match</h3>
+          <label class="field"><span>Bot skill</span>
+            <select id="set-botSkill"><option value="casual">Casual</option><option value="mixed">Mixed</option><option value="sweaty">Sweaty</option></select>
+          </label>
+          <label class="field"><span>Bots per match</span><input type="range" id="set-bots" min="5" max="27" step="1" /><output id="out-bots"></output></label>
+        </section>
+        <section>
+          <h3>Key bindings</h3>
+          <p class="hint">Click a key, then press the new one. Esc cancels.</p>
+          <div id="bind-list"></div>
+          <button class="text-btn" id="reset-binds">Reset to defaults</button>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen panel-screen" id="screen-controls" hidden>
+    <div class="panel">
+      <header class="panel-head"><h2>Controls</h2><button class="text-btn" data-back>Back</button></header>
+      <div class="controls-grid" id="controls-list"></div>
+      <p class="hint">Mouse: look and aim. Left click fires, builds or uses the selected item. Hold right click to aim down sights. The mouse wheel cycles slots. Esc pauses.</p>
+    </div>
+  </section>
+
+  <section class="screen panel-screen" id="screen-credits" hidden>
+    <div class="panel narrow">
+      <header class="panel-head"><h2>Credits</h2><button class="text-btn" data-back>Back</button></header>
+      <div class="credits">
+        <p><strong>Squall</strong> is an original battle royale built for the Chromo shelf.</p>
+        <p>Design, code, island, characters, weapons and HUD by The_headphones.</p>
+        <p>Every model is built from code at load time. Every sound is synthesized live with the Web Audio API. There are no third-party art, audio or game assets.</p>
+        <p>Rendering by <a href="https://threejs.org" target="_blank" rel="noopener">Three.js</a> r128 (MIT licence). Type set in Big Shoulders Display and Atkinson Hyperlegible.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen pause-screen" id="screen-pause" hidden>
+    <div class="pause-col">
+      <h2>Paused</h2>
+      <p class="hint" id="pause-hint">The match keeps running while you're in menus.</p>
+      <nav class="menu-list">
+        <button class="menu-item primary" data-action="resume">Resume</button>
+        <button class="menu-item" data-action="settings">Settings</button>
+        <button class="menu-item" data-action="controls">Controls</button>
+        <button class="menu-item" data-action="quit">Leave match</button>
+      </nav>
+    </div>
+  </section>
+
+  <section class="screen inventory-screen" id="screen-inventory" hidden>
+    <div class="inv-map"><canvas id="bigmap" width="520" height="520"></canvas></div>
+    <div class="inv-side">
+      <header class="panel-head"><h2>Inventory</h2><button class="text-btn" data-action="close-inventory">Close <kbd>Tab</kbd></button></header>
+      <p class="hint">Click two slots to swap them. Dropped items land at your feet.</p>
+      <ol id="inv-slots"></ol>
+      <h3>Ammo and materials</h3>
+      <dl id="inv-ammo"></dl>
+    </div>
+  </section>
+
+  <section class="screen result-screen" id="screen-result" hidden>
+    <div class="result-inner">
+      <p class="result-kicker" id="result-kicker"></p>
+      <h2 id="result-place"></h2>
+      <p class="result-line" id="result-line"></p>
+      <dl class="result-stats">
+        <div><dt>Eliminations</dt><dd id="res-elims"></dd></div>
+        <div><dt>Damage dealt</dt><dd id="res-damage"></dd></div>
+        <div><dt>Survived</dt><dd id="res-time"></dd></div>
+        <div><dt>Built</dt><dd id="res-built"></dd></div>
+      </dl>
+      <nav class="result-actions">
+        <button class="menu-item primary" data-action="again">Play again</button>
+        <button class="menu-item" data-action="menu">Main menu</button>
+      </nav>
+    </div>
+  </section>
+
+  <div id="lock-hint" hidden>Click to aim</div>
+
+  <script src="../../assets/vendor/three.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/terrain.js"></script>
+  <script src="js/physics.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/effects.js"></script>
+  <script src="js/inventory.js"></script>
+  <script src="js/character.js"></script>
+  <script src="js/weapons.js"></script>
+  <script src="js/loot.js"></script>
+  <script src="js/building.js"></script>
+  <script src="js/storm.js"></script>
+  <script src="js/camera.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/bots.js"></script>
+  <script src="js/hud.js"></script>
+  <script src="js/menus.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
