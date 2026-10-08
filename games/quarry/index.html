@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<!-- By The_headphones -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Quarry</title>
+  <meta name="description" content="Quarry: an original block sandbox in your browser. Mine, build and explore a generated island by day and night." />
+  <meta name="theme-color" content="#2b2118" />
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=VT323&display=swap" />
+  <link rel="stylesheet" href="css/quarry.css" />
+</head>
+<body data-screen="title">
+  <div id="stage"></div>
+  <!-- Outside the HUD layer so its difference blend works against the 3D view. -->
+  <div id="crosshair" aria-hidden="true" hidden></div>
+
+  <!-- In-game HUD -->
+  <div id="hud" hidden>
+    <div id="hurt"></div>
+    <pre id="debug" hidden></pre>
+    <div id="toasts" aria-live="polite"></div>
+    <button id="menu-btn" class="hud-btn" type="button" aria-label="Pause menu">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="4" y="3" width="3" height="10" /><rect x="9" y="3" width="3" height="10" /></svg>
+    </button>
+    <p id="lock-hint" hidden>Click to look around</p>
+    <div id="bottom">
+      <p id="item-name" aria-live="polite"></p>
+      <div id="status">
+        <div id="hearts" aria-label="Health"></div>
+        <div id="bubbles" aria-label="Air" hidden></div>
+      </div>
+      <div id="hotbar" role="listbox" aria-label="Hotbar"></div>
+    </div>
+  </div>
+
+  <!-- Touch controls (shown on phones and tablets while playing) -->
+  <div id="touch-ui">
+    <div id="look-zone"></div>
+    <div id="move-zone"><div id="stick"><div id="stick-knob"></div></div></div>
+    <div id="touch-buttons">
+      <button id="t-break" class="t-btn" type="button" aria-label="Break block (hold)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20 L15 10" /><path d="M8 6 Q14 3 20 7 Q19 4 15 3 Q11 3 8 6 Z" /><path d="M13 8 L17 12" /><path d="M18 9 Q21 12 20 16 Q22 12 20 8 Z" /></svg>
+      </button>
+      <button id="t-place" class="t-btn" type="button" aria-label="Place block">
+        <img id="t-place-icon" alt="" hidden />
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5 V19 M5 12 H19" /></svg>
+      </button>
+      <button id="t-jump" class="t-btn" type="button" aria-label="Jump">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15 L12 8 L19 15" /></svg>
+      </button>
+      <button id="t-down" class="t-btn" type="button" aria-label="Fly down" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9 L12 16 L19 9" /></svg>
+      </button>
+    </div>
+    <button id="t-bag" class="t-btn" type="button" aria-label="Inventory">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="11" width="3" height="3" /><rect x="10.5" y="11" width="3" height="3" /><rect x="17" y="11" width="3" height="3" /></svg>
+    </button>
+  </div>
+
+  <!-- Title -->
+  <section class="screen dirt" id="screen-title">
+    <div class="title-block">
+      <h1 class="logo"><span>QUARRY</span></h1>
+      <p class="splash" id="splash"></p>
+    </div>
+    <nav class="menu" aria-label="Main menu">
+      <button class="mc-btn" id="btn-continue" type="button" hidden data-autofocus>Continue world</button>
+      <p class="save-note" id="save-note"></p>
+      <button class="mc-btn" id="btn-new" type="button">New world</button>
+      <button class="mc-btn" id="btn-settings" type="button">Settings</button>
+      <a class="mc-btn" href="../../index.html">Back to Website</a>
+    </nav>
+    <p class="foot">An original block sandbox. Every texture and sound is generated in your browser.</p>
+  </section>
+
+  <!-- New world -->
+  <section class="screen dirt" id="screen-new" hidden>
+    <h2>Create a new world</h2>
+    <div class="form">
+      <label class="field" for="seed-input">World seed
+        <input id="seed-input" type="text" maxlength="32" autocomplete="off" spellcheck="false" placeholder="Leave blank for a random island" />
+      </label>
+      <div class="field">Game mode
+        <div class="mode-pick">
+          <button class="mc-btn small" id="mode-survival" type="button" aria-pressed="true">Survival</button>
+          <button class="mc-btn small" id="mode-creative" type="button" aria-pressed="false">Creative</button>
+        </div>
+        <p class="note" id="mode-note">Mine blocks to collect them and craft new ones. Watch your hearts.</p>
+      </div>
+      <p class="warn" id="overwrite-warn" hidden>Creating a world replaces the one saved in this browser.</p>
+    </div>
+    <div class="row">
+      <button class="mc-btn" id="btn-create" type="button" data-autofocus>Create world</button>
+      <button class="mc-btn" id="btn-new-back" type="button">Cancel</button>
+    </div>
+  </section>
+
+  <!-- Loading -->
+  <section class="screen dirt" id="screen-loading" hidden>
+    <p class="loading-title">Generating world</p>
+    <p class="loading-label" id="loading-label">Shaping the land</p>
+    <div class="progress" role="progressbar" aria-label="World generation"><span id="loading-bar"></span></div>
+  </section>
+
+  <!-- How to play (shown on entering a world) -->
+  <section class="screen shade" id="screen-controls" hidden>
+    <div class="panel-dark">
+      <h2>How to play</h2>
+      <dl class="controls" id="controls-list"></dl>
+      <p class="note">Your world saves in this browser when you pause, quit or leave the page.</p>
+      <button class="mc-btn" id="btn-start" type="button" data-autofocus>Start playing</button>
+    </div>
+  </section>
+
+  <!-- Pause -->
+  <section class="screen shade" id="screen-pause" hidden>
+    <h2>Game menu</h2>
+    <nav class="menu" aria-label="Game menu">
+      <button class="mc-btn" id="btn-resume" type="button" data-autofocus>Back to game</button>
+      <button class="mc-btn" id="btn-pause-controls" type="button">Controls</button>
+      <button class="mc-btn" id="btn-pause-settings" type="button">Settings</button>
+      <button class="mc-btn" id="btn-save-quit" type="button">Save and quit to title</button>
+      <a class="mc-btn" href="../../index.html">Back to Website</a>
+    </nav>
+  </section>
+
+  <!-- Settings -->
+  <section class="screen shade" id="screen-settings" hidden>
+    <h2>Settings</h2>
+    <div class="settings" id="settings-list"></div>
+    <button class="mc-btn" id="btn-settings-done" type="button" data-autofocus>Done</button>
+  </section>
+
+  <!-- Inventory -->
+  <section class="screen shade" id="screen-inventory" hidden>
+    <div class="inv-panel" role="dialog" aria-labelledby="inv-title">
+      <div class="inv-head">
+        <h2 id="inv-title">Inventory</h2>
+        <button class="inv-close" id="btn-inv-close" type="button" aria-label="Close inventory">×</button>
+      </div>
+      <p class="inv-help" id="inv-help"></p>
+      <div class="inv-body">
+        <div class="inv-left">
+          <div id="palette-wrap" hidden><div class="inv-grid" id="palette"></div></div>
+          <div id="pack-wrap"><div class="inv-grid" id="inv-main"></div></div>
+          <div class="inv-grid hot" id="inv-hot"></div>
+        </div>
+        <div class="craft" id="craft-wrap">
+          <h3>Crafting</h3>
+          <div class="recipes" id="recipes"></div>
+        </div>
+      </div>
+    </div>
+    <div id="cursor-stack" hidden><img alt="" /><span class="count"></span></div>
+    <div id="tooltip" hidden></div>
+  </section>
+
+  <!-- Death -->
+  <section class="screen dead" id="screen-death" hidden>
+    <h2>You died!</h2>
+    <p class="death-reason" id="death-reason"></p>
+    <p class="note">You keep everything you were carrying.</p>
+    <nav class="menu" aria-label="Respawn">
+      <button class="mc-btn" id="btn-respawn" type="button" data-autofocus>Respawn</button>
+      <button class="mc-btn" id="btn-death-title" type="button">Save and quit to title</button>
+    </nav>
+  </section>
+
+  <!-- No WebGL -->
+  <section class="screen dirt" id="screen-error" hidden>
+    <h2>Quarry can't start here</h2>
+    <p class="note" id="error-detail">This browser or device doesn't support WebGL, which Quarry needs to draw the world.</p>
+    <a class="mc-btn" href="../../index.html">Back to Website</a>
+  </section>
+
+  <script src="../../assets/vendor/three.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/noise.js"></script>
+  <script src="js/textures.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/mesher.js"></script>
+  <script src="js/chunks.js"></script>
+  <script src="js/sky.js"></script>
+  <script src="js/effects.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/items.js"></script>
+  <script src="js/hand.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

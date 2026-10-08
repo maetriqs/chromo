@@ -1079,8 +1079,199 @@ function squallDemo(canvas) {
   run({ step, draw }, 60, 40);
 }
 
+// Isometric block island: a block gets mined, another gets placed, over and over.
+function quarryDemo(canvas) {
+  const { ctx, size } = setup(canvas);
+  const s = size / 13.6;
+  const P = isoProjector(size / 2, size * 0.36, s);
+  const COLORS = {
+    grass: "#6aa84f",
+    dirt: "#8a6142",
+    stone: "#8b8b8d",
+    sand: "#dccb94",
+    log: "#6b4f32",
+    leaves: "#3f7f2e",
+    planks: "#b48c56",
+    bricks: "#a24d3c",
+    bed: "#5b4632",
+  };
+  const HEIGHTS = [
+    [0, 0, 1, 1, 1, 0, 0],
+    [0, 1, 2, 2, 2, 1, 0],
+    [1, 2, 3, 3, 2, 2, 1],
+    [1, 2, 3, 4, 3, 2, 1],
+    [1, 2, 2, 3, 3, 2, 0],
+    [0, 1, 2, 2, 2, 1, 0],
+    [0, 0, 1, 1, 0, 0, 0],
+  ];
+  const N = 7;
+  let blocks, particles, action, actions, popping;
+  const key = (x, y, z) => `${x},${y},${z}`;
+
+  function reset() {
+    blocks = new Map();
+    particles = [];
+    actions = 0;
+    popping = null;
+    for (let x = 0; x < N; x++) {
+      for (let z = 0; z < N; z++) {
+        const h = HEIGHTS[z][x];
+        for (let y = 0; y < h; y++) {
+          let type = "dirt";
+          if (y === h - 1) type = h === 1 ? "sand" : "grass";
+          else if (y === 0 && h >= 3) type = "stone";
+          blocks.set(key(x, y, z), { x, y, z, type });
+        }
+      }
+    }
+    [2, 3].forEach((y) => blocks.set(key(1, y, 2), { x: 1, y, z: 2, type: "log" }));
+    for (let x = 0; x <= 2; x++) for (let z = 1; z <= 3; z++) if (!blocks.has(key(x, 4, z))) blocks.set(key(x, 4, z), { x, y: 4, z, type: "leaves" });
+    blocks.set(key(1, 5, 2), { x: 1, y: 5, z: 2, type: "leaves" });
+    next();
+  }
+
+  const topOf = (x, z) => {
+    let y = -1;
+    blocks.forEach((b) => {
+      if (b.x === x && b.z === z && b.y > y) y = b.y;
+    });
+    return y;
+  };
+
+  // Alternate between mining the top of a column and placing a block on another.
+  function next() {
+    actions++;
+    if (actions > 28) {
+      reset();
+      return;
+    }
+    const land = [];
+    for (let x = 0; x < N; x++) for (let z = 0; z < N; z++) if (HEIGHTS[z][x] > 0 && !(x <= 2 && z >= 1 && z <= 3)) land.push([x, z]);
+    const [x, z] = land[rand(land.length)];
+    const y = topOf(x, z);
+    if (actions % 2 && y > 0) action = { kind: "mine", x, y, z, t: 0 };
+    else action = { kind: "place", x, y: y + 1, z, t: 0, type: actions % 4 === 0 ? "bricks" : "planks" };
+    if (action.kind === "place" && action.y > 5) action = { kind: "mine", x, y, z, t: 0 };
+  }
+
+  function step() {
+    action.t += 1;
+    if (popping) {
+      popping.k = Math.min(1, popping.k + 0.25);
+      if (popping.k >= 1) popping = null;
+    }
+    if (action.kind === "mine" && action.t >= 16) {
+      const b = blocks.get(key(action.x, action.y, action.z));
+      if (b) {
+        blocks.delete(key(action.x, action.y, action.z));
+        for (let i = 0; i < 10; i++) {
+          particles.push({
+            x: action.x + 0.5,
+            y: action.y + 0.6,
+            z: action.z + 0.5,
+            vx: (Math.random() - 0.5) * 0.12,
+            vy: Math.random() * 0.12 + 0.04,
+            vz: (Math.random() - 0.5) * 0.12,
+            life: 14 + rand(8),
+            color: COLORS[b.type],
+          });
+        }
+      }
+      next();
+    } else if (action.kind === "place" && action.t >= 10) {
+      const b = { x: action.x, y: action.y, z: action.z, type: action.type };
+      blocks.set(key(b.x, b.y, b.z), b);
+      popping = { b, k: 0.2 };
+      next();
+    }
+    particles.forEach((p) => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.z += p.vz;
+      p.vy -= 0.018;
+      p.life -= 1;
+    });
+    particles = particles.filter((p) => p.life > 0);
+  }
+
+  function outline(x, y, z) {
+    const corners = [[x, y + 1, z], [x + 1, y + 1, z], [x + 1, y + 1, z + 1], [x, y + 1, z + 1]].map(([a, b, c]) => P(a, b, c));
+    ctx.beginPath();
+    corners.forEach(([px, py], i) => (i ? ctx.lineTo(px, py) : ctx.moveTo(px, py)));
+    ctx.closePath();
+    const low = [[x + 1, y, z + 1], [x, y, z + 1], [x + 1, y, z]].map(([a, b, c]) => P(a, b, c));
+    ctx.moveTo(...corners[2]);
+    ctx.lineTo(...low[0]);
+    ctx.moveTo(...corners[3]);
+    ctx.lineTo(...low[1]);
+    ctx.moveTo(...corners[1]);
+    ctx.lineTo(...low[2]);
+    ctx.moveTo(...low[1]);
+    ctx.lineTo(...low[0]);
+    ctx.lineTo(...low[2]);
+    ctx.strokeStyle = "rgba(20, 12, 6, 0.85)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, size, size);
+    const list = [];
+    for (let x = 0; x < N; x++) {
+      for (let z = 0; z < N; z++) {
+        list.push({ x, y: -0.5, z, h: 0.5, type: HEIGHTS[z][x] ? "bed" : "sand" });
+        if (!HEIGHTS[z][x]) list.push({ x, y: 0, z, h: 0.72, type: "water" });
+      }
+    }
+    blocks.forEach((b) => list.push(b));
+    list.sort((a, b) => a.x + a.z - (b.x + b.z) || a.y - b.y);
+    list.forEach((b) => {
+      if (b.type === "water") {
+        ctx.globalAlpha = 0.82;
+        isoBox(ctx, P, b.x, b.y, b.z, 1, b.h, 1, "#4a78d6");
+        ctx.globalAlpha = 1;
+        return;
+      }
+      let k = 1;
+      if (popping && popping.b === b) k = popping.k;
+      const o = (1 - k) / 2;
+      const h = b.h || 1;
+      if (b.type === "grass") {
+        isoBox(ctx, P, b.x + o, b.y, b.z + o, k, h * k, k, COLORS.dirt);
+        isoBox(ctx, P, b.x + o, b.y + h * k * 0.8, b.z + o, k, h * k * 0.2, k, COLORS.grass);
+      } else {
+        isoBox(ctx, P, b.x + o, b.y, b.z + o, k, h * k, k, COLORS[b.type]);
+      }
+      if (action && action.kind === "mine" && b.x === action.x && b.y === action.y && b.z === action.z) {
+        const [cx, cy] = P(b.x + 0.5, b.y + 1, b.z + 0.5);
+        ctx.strokeStyle = "rgba(25, 16, 10, 0.75)";
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        const cracks = Math.floor((action.t / 16) * 6);
+        for (let i = 0; i < cracks; i++) {
+          const a = i * 1.9;
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(cx + Math.cos(a) * s * 0.55, cy + Math.sin(a) * s * 0.28);
+        }
+        ctx.stroke();
+      }
+    });
+    if (action && action.kind === "mine") outline(action.x, action.y, action.z);
+    if (action && action.kind === "place") outline(action.x, action.y, action.z);
+    particles.forEach((p) => {
+      const [px, py] = P(p.x, p.y, p.z);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(px - 2, py - 2, 4, 4);
+    });
+  }
+
+  reset();
+  run({ step, draw }, 70, 6);
+}
+
 const DEMOS = {
   squall: squallDemo,
+  quarry: quarryDemo,
   stack: stackDemo,
   dash: dashDemo,
   tilt: tiltDemo,
