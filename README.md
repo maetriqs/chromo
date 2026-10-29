@@ -1,7 +1,8 @@
 # Chromo
 
 A static browser-games site: plain HTML, CSS and vanilla JS, no build step.
-The home page is a set of shelves of game boxes, each with a small self-playing preview.
+The home page is a cupboard: game boxes stand on plywood shelves, each with a small self-playing preview,
+and an "In this cupboard" list at the top jumps to each shelf. On phones the boxes lie flat in a pile on each shelf.
 
 ## Games
 
@@ -188,7 +189,9 @@ the classic model. There is one save slot per browser.
 1. Copy a `games/<game>/` folder and rename it.
 2. Set the box colour on the page's `<body>`, e.g. `style="--box: var(--sea)"`, or add a colour token in `styles.css`.
 3. Add an `<a class="box box-md box-yourgame">` to a shelf in `index.html` with the spec line, name and blurb,
-   and give `.box-yourgame` its `--box` colour in `styles.css`. Use `box-sm`, `box-md` or `box-lg` for the box size.
+   and give `.box-yourgame` its `--box` colour in `styles.css`. Use `box-sm`, `box-md` or `box-lg` for the box size
+   (`box-xl` is kept for the two big games). A new shelf needs an `id` on its `<section class="shelf">`, a plank
+   (`shelf-board`) and an entry in the "In this cupboard" list at the top of the page.
 4. For a live preview, add a demo function to `assets/js/shelf.js`, register it in `DEMOS`,
    and point a `<canvas data-demo="...">` at it. Otherwise drop the canvas.
 5. Call `Sound.play("pop")` and the other effects in `sound.js` from your game for audio.

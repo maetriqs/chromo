@@ -76,66 +76,158 @@ a {
   text-transform: uppercase;
 }
 
-/* Home: masthead */
+/* Home: a cupboard of game boxes. Boxes stand on plywood shelves against a warm wall. */
+
+.home {
+  --wall: #eee8de;
+  --wall-shadow: 52, 38, 24;
+  --ply-top: #f1e0bf;
+  --ply-face: #dfc394;
+  --ply-line: #cfad79;
+  --label: #fdfaf3;
+  background: var(--wall);
+}
+
+.home .wrap {
+  max-width: 1100px;
+}
 
 .masthead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, 300px);
+  align-items: end;
+  gap: 36px 72px;
+  padding-block: 72px 64px;
+}
+
+.masthead-main {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px 48px;
-  flex-wrap: wrap;
-  padding-block: 56px 48px;
+  flex-direction: column;
+  gap: 22px;
 }
 
 .wordmark {
   font-family: var(--font-display);
   font-weight: 900;
-  font-size: clamp(64px, 12vw, 112px);
-  line-height: 0.82;
+  font-size: clamp(72px, 13vw, 150px);
+  line-height: 0.78;
   text-transform: uppercase;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   margin: 0;
 }
 
 .lede {
-  max-width: 36ch;
+  max-width: 40ch;
   margin: 0;
-  font-size: 18px;
+  font-size: 19px;
+  line-height: 1.5;
   color: var(--ink-soft);
-  text-wrap: pretty;
+  text-wrap: balance;
 }
 
-/* Home: the shelf */
+/* The contents list, printed like the back of a game box. */
+.contents {
+  border-top: 3px solid var(--ink);
+  padding-top: 12px;
+}
+
+.contents-title {
+  margin: 0 0 8px;
+  color: var(--ink-soft);
+}
+
+.contents-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.contents-list a {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 17px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.contents-list i {
+  flex: 1;
+  border-bottom: 2px dotted rgba(22, 33, 59, 0.3);
+}
+
+.contents-list span:last-child {
+  font-variant-numeric: tabular-nums;
+}
+
+.contents-list a:hover span:first-child,
+.contents-list a:focus-visible span:first-child {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+/* Shelves */
+
+.shelves {
+  display: flex;
+  flex-direction: column;
+  gap: 76px;
+}
+
+.shelf {
+  scroll-margin-top: 28px;
+}
 
 .shelf-row {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: flex-end;
-  gap: 20px;
-  padding-inline: 12px;
+  justify-content: center;
+  gap: 28px;
+  padding-inline: 18px;
+  margin-bottom: -5px;
 }
 
 .box {
   --demo: 220px;
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 18px 18px 22px;
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 20px 20px 24px;
   background: var(--box);
   color: var(--ink);
   text-decoration: none;
-  border-radius: var(--radius) var(--radius) 0 0;
-  box-shadow: inset 0 7px 0 rgba(22, 33, 59, 0.14);
-  transition: transform 180ms ease;
+  border-radius: 4px 4px 1px 1px;
+  /* Lid edge, a little shade where the box turns away, the shadow it throws on the wall,
+     and a contact shadow where it stands on the plank. */
+  box-shadow:
+    inset 0 8px 0 rgba(22, 33, 59, 0.13),
+    inset -7px 0 0 rgba(22, 33, 59, 0.07),
+    14px -4px 26px -16px rgba(var(--wall-shadow), 0.55),
+    0 5px 5px -3px rgba(var(--wall-shadow), 0.45);
+  transition: transform 200ms ease, box-shadow 200ms ease;
 }
 
 .box:hover,
 .box:focus-visible {
-  transform: translateY(-8px);
+  transform: translateY(-10px);
+  box-shadow:
+    inset 0 8px 0 rgba(22, 33, 59, 0.13),
+    inset -7px 0 0 rgba(22, 33, 59, 0.07),
+    18px 6px 30px -16px rgba(var(--wall-shadow), 0.6),
+    0 16px 14px -12px rgba(var(--wall-shadow), 0.35);
 }
 
-.box-lg { width: 360px; --demo: 280px; }
-.box-md { width: 300px; --demo: 220px; }
-.box-sm { width: 256px; --demo: 184px; }
+.box-xl { width: 500px; --demo: 260px; gap: 16px; padding: 24px 28px 28px; }
+.box-lg { width: 372px; --demo: 280px; }
+.box-md { width: 312px; --demo: 220px; }
+.box-sm { width: 264px; --demo: 184px; }
 
 .box-snake { --box: var(--sea); }
 .box-bricks { --box: var(--pink); }
@@ -145,73 +237,41 @@ a {
 .box-memory { --box: var(--mustard); }
 .box-2048 { --box: var(--kraft); }
 .box-mines { --box: var(--lime); }
-.box-feature {
-  --demo: 240px;
-  width: 100%;
-  flex-direction: row;
-  align-items: center;
-  gap: 32px;
-  padding: 26px 32px 28px;
-}
-
-.box-feature .box-demo {
-  margin: 0;
-  flex: none;
-}
-
-.box-feature-text {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.box-feature .box-name {
-  font-size: clamp(60px, 9vw, 96px);
-}
-
-.box-feature .box-blurb {
-  font-size: 17px;
-  max-width: 44ch;
-}
-
-.box-squall {
-  --box: #1f6b5d;
-  --ink: #fafbfc;
-  --paper: #1f6b5d;
-  box-shadow: inset 0 7px 0 rgba(250, 251, 252, 0.16);
-}
-
-.box-feature-flip {
-  flex-direction: row-reverse;
-  justify-content: space-between;
-}
-
-.box-quarry {
-  --box: #6b4a2e;
-  --ink: #fafbfc;
-  --paper: #6b4a2e;
-  box-shadow: inset 0 7px 0 rgba(250, 251, 252, 0.16);
-}
-
-@media (max-width: 820px) {
-  .box-feature {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .box-feature .box-demo {
-    align-self: center;
-  }
-}
-
 .box-stack { --box: var(--aqua); }
 .box-dash { --box: var(--butter); }
+
+/* Dark boxes print in light ink and get a lighter lid edge. */
+.box-squall,
+.box-quarry,
 .box-lights,
 .box-tilt {
-  --box: #16213b;
   --ink: #fafbfc;
-  --paper: #16213b;
-  box-shadow: inset 0 7px 0 rgba(250, 251, 252, 0.16);
+  --paper: var(--box);
+  box-shadow:
+    inset 0 8px 0 rgba(250, 251, 252, 0.16),
+    inset -7px 0 0 rgba(0, 0, 0, 0.12),
+    14px -4px 26px -16px rgba(var(--wall-shadow), 0.6),
+    0 5px 5px -3px rgba(var(--wall-shadow), 0.5);
 }
+
+.box-squall:hover,
+.box-quarry:hover,
+.box-lights:hover,
+.box-tilt:hover,
+.box-squall:focus-visible,
+.box-quarry:focus-visible,
+.box-lights:focus-visible,
+.box-tilt:focus-visible {
+  box-shadow:
+    inset 0 8px 0 rgba(250, 251, 252, 0.16),
+    inset -7px 0 0 rgba(0, 0, 0, 0.12),
+    18px 6px 30px -16px rgba(var(--wall-shadow), 0.65),
+    0 16px 14px -12px rgba(var(--wall-shadow), 0.4);
+}
+
+.box-squall { --box: #1f6b5d; }
+.box-quarry { --box: #6b4a2e; }
+.box-lights { --box: #16213b; }
 .box-tilt { --box: #8f4f86; }
 
 .box .spec {
@@ -235,10 +295,20 @@ a {
   text-transform: uppercase;
 }
 
+.box-xl .box-name {
+  font-size: 78px;
+  line-height: 0.85;
+}
+
 .box-blurb {
   font-size: 15px;
   line-height: 1.45;
   max-width: 32ch;
+}
+
+.box-xl .box-blurb {
+  font-size: 16.5px;
+  max-width: 40ch;
 }
 
 .box-play {
@@ -249,45 +319,197 @@ a {
 }
 
 .box-play::after {
-  content: " \2192";
+  content: "\2192";
+  display: inline-block;
+  margin-left: 0.3em;
+  transition: transform 200ms ease;
 }
 
-.box {
-  flex: 0 1 auto;
-  min-width: 0;
+.box:hover .box-play::after,
+.box:focus-visible .box-play::after {
+  transform: translateX(3px);
 }
 
-.shelves {
-  display: flex;
-  flex-direction: column;
-  gap: 64px;
-}
-
+/* The plank: a lit top surface, then a plywood edge with its layers showing. */
 .shelf-board {
+  position: relative;
+  z-index: 1;
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
-  background: var(--ink);
-  color: var(--ground);
+  height: 42px;
+  padding: 10px 14px 0;
+  background:
+    linear-gradient(to bottom, var(--ply-top) 0, var(--ply-top) 9px, rgba(255, 255, 255, 0.55) 9px, rgba(255, 255, 255, 0.55) 10px, transparent 10px),
+    repeating-linear-gradient(to bottom, var(--ply-face) 0, var(--ply-face) 3px, var(--ply-line) 3px, var(--ply-line) 4px);
   border-radius: 2px;
-  padding: 9px 16px;
+  box-shadow:
+    0 1px 0 rgba(var(--wall-shadow), 0.3),
+    0 18px 20px -14px rgba(var(--wall-shadow), 0.55);
 }
 
-@media (max-width: 820px) {
+.shelf-label,
+.shelf-count {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.shelf-label {
+  padding: 5px 9px 4px;
+  color: var(--ink);
+  background: var(--label);
+  border: 1px solid rgba(var(--wall-shadow), 0.35);
+  box-shadow: 0 1px 1px rgba(var(--wall-shadow), 0.2);
+}
+
+.shelf-count {
+  color: #6f4f2c;
+}
+
+/* Tablets and phones: the boxes lie flat in a pile on each shelf, picture on the left. */
+@media (max-width: 900px) {
+  .masthead {
+    gap: 32px 40px;
+    padding-block: 48px 44px;
+  }
+  .shelves {
+    gap: 56px;
+  }
   .shelf-row {
     flex-direction: column;
     align-items: stretch;
-    padding-inline: 0;
+    gap: 0;
+    padding-inline: 12px;
   }
   .box {
+    --thumb: 136px;
     width: auto;
+    display: grid;
+    grid-template-columns: var(--thumb) minmax(0, 1fr);
+    column-gap: 20px;
+    row-gap: 8px;
+    align-content: center;
+    padding: 20px 18px 20px 16px;
+    border-radius: 3px;
   }
-  .shelves {
-    gap: 48px;
+  /* A pile is never perfectly square. */
+  .box:nth-child(odd) {
+    margin-right: 12px;
+  }
+  .box:nth-child(even) {
+    margin-left: 12px;
+  }
+  .box-xl:nth-child(n) {
+    margin-inline: 0;
+  }
+  .box > * {
+    grid-column: 2;
+  }
+  .box .box-play {
+    justify-self: start;
+  }
+  .box .box-demo {
+    grid-column: 1;
+    grid-row: 1 / span 4;
+    width: var(--thumb);
+    margin: 0;
+    align-self: center;
+  }
+  .box .spec {
+    padding-top: 0;
+  }
+  .box-name {
+    font-size: 38px;
+  }
+  .box-blurb {
+    max-width: 46ch;
+  }
+  .box-xl {
+    --thumb: 200px;
+  }
+  .box-xl .box-name {
+    font-size: 60px;
   }
   .box:hover,
   .box:focus-visible {
     transform: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .masthead {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .contents {
+    max-width: 460px;
+  }
+}
+
+@media (max-width: 520px) {
+  .masthead {
+    gap: 26px;
+    padding-block: 36px 34px;
+  }
+  .lede {
+    font-size: 17px;
+  }
+  .contents-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 22px;
+  }
+  .contents-list a {
+    font-size: 15px;
+  }
+  .box {
+    --thumb: 104px;
+    column-gap: 14px;
+    padding: 16px 14px 18px 12px;
+  }
+  .box:nth-child(odd) {
+    margin-right: 8px;
+  }
+  .box:nth-child(even) {
+    margin-left: 8px;
+  }
+  .box-name {
+    font-size: 32px;
+  }
+  .box-blurb {
+    font-size: 14px;
+  }
+  .box .spec {
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+  }
+  /* The two big games keep their picture on top. */
+  .box-xl {
+    display: flex;
+    padding: 18px 18px 22px;
+  }
+  .box-xl .box-demo {
+    width: min(240px, 100%);
+    margin-block: 4px;
+  }
+  .box-xl .box-name {
+    font-size: 54px;
+  }
+}
+
+@media (max-width: 360px) {
+  .contents-list {
+    grid-template-columns: 1fr;
+  }
+  .box {
+    --thumb: 84px;
+    column-gap: 12px;
+  }
+  .box-name {
+    font-size: 28px;
   }
 }
 

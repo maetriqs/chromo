@@ -12,46 +12,48 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Big+Shoulders+Display:wght@700;800;900&display=swap" />
   <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
-<body>
+<body class="home">
 
   <header class="wrap masthead">
-    <h1 class="wordmark">Chromo</h1>
-    <p class="lede">Fourteen games that run in your browser, from Snake to a 3D battle royale and a block-building sandbox. Pick one off the shelf. There's nothing to install and no account to make.</p>
+    <div class="masthead-main">
+      <h1 class="wordmark">Chromo</h1>
+      <p class="lede">Fourteen games that run in your browser, from Snake to a 3D battle royale and a block-building sandbox. Pick one off the shelf. There's nothing to install and no account to make.</p>
+    </div>
+    <nav class="contents" aria-labelledby="contents-title">
+      <p class="contents-title spec" id="contents-title">In this cupboard</p>
+      <ol class="contents-list">
+        <li><a href="#big"><span>Big games</span><i aria-hidden="true"></i><span>2</span></a></li>
+        <li><a href="#three-d"><span>3D</span><i aria-hidden="true"></i><span>3</span></a></li>
+        <li><a href="#arcade"><span>Arcade</span><i aria-hidden="true"></i><span>3</span></a></li>
+        <li><a href="#table"><span>Table and cards</span><i aria-hidden="true"></i><span>3</span></a></li>
+        <li><a href="#puzzles"><span>Puzzles</span><i aria-hidden="true"></i><span>3</span></a></li>
+      </ol>
+    </nav>
   </header>
 
   <main class="wrap shelves">
 
-    <section aria-label="Battle royale">
+    <section class="shelf" id="big" aria-label="Big games">
       <div class="shelf-row">
-        <a class="box box-feature box-squall" href="games/squall/index.html">
-          <canvas class="box-demo" data-demo="squall" data-size="240" aria-hidden="true"></canvas>
-          <span class="box-feature-text">
-            <span class="spec">1 player vs 19 bots · Ages 12+ · 8 min · 3D</span>
-            <span class="box-name">Squall</span>
-            <span class="box-blurb">Drop onto Kestrel Isle, loot weapons from five rarity tiers, build cover, and be the last one standing when the storm closes in.</span>
-            <span class="box-play">Play</span>
-          </span>
+        <a class="box box-xl box-squall" href="games/squall/index.html">
+          <span class="spec">1 player vs 19 bots · Ages 12+ · 8 min · 3D</span>
+          <canvas class="box-demo" data-demo="squall" data-size="260" aria-hidden="true"></canvas>
+          <span class="box-name">Squall</span>
+          <span class="box-blurb">Drop onto Kestrel Isle, loot weapons from five rarity tiers, build cover, and be the last one standing when the storm closes in.</span>
+          <span class="box-play">Play</span>
+        </a>
+        <a class="box box-xl box-quarry" href="games/quarry/index.html">
+          <span class="spec">1 player · Ages 8+ · Endless · 3D</span>
+          <canvas class="box-demo" data-demo="quarry" data-size="260" aria-hidden="true"></canvas>
+          <span class="box-name">Quarry</span>
+          <span class="box-blurb">Mine and build on a generated island. Collect blocks, craft new ones and light up the night with lamps. Plays with a mouse or a touchscreen.</span>
+          <span class="box-play">Play</span>
         </a>
       </div>
-      <div class="shelf-board spec"><span>Battle royale</span><span>1 game</span></div>
+      <div class="shelf-board"><span class="shelf-label">Big games</span><span class="shelf-count">2 games</span></div>
     </section>
 
-    <section aria-label="Sandbox">
-      <div class="shelf-row">
-        <a class="box box-feature box-feature-flip box-quarry" href="games/quarry/index.html">
-          <canvas class="box-demo" data-demo="quarry" data-size="240" aria-hidden="true"></canvas>
-          <span class="box-feature-text">
-            <span class="spec">1 player · Ages 8+ · Endless · 3D</span>
-            <span class="box-name">Quarry</span>
-            <span class="box-blurb">Mine and build on a generated island. Collect blocks, craft new ones and light up the night with lamps. Plays with a mouse or a touchscreen.</span>
-            <span class="box-play">Play</span>
-          </span>
-        </a>
-      </div>
-      <div class="shelf-board spec"><span>Sandbox</span><span>1 game</span></div>
-    </section>
-
-    <section aria-label="3D games">
+    <section class="shelf" id="three-d" aria-label="3D games">
       <div class="shelf-row">
         <a class="box box-md box-stack" href="games/stack/index.html">
           <span class="spec">1 player · Ages 6+ · 2 min</span>
@@ -75,10 +77,10 @@
           <span class="box-play">Play</span>
         </a>
       </div>
-      <div class="shelf-board spec"><span>3D</span><span>3 games</span></div>
+      <div class="shelf-board"><span class="shelf-label">3D</span><span class="shelf-count">3 games</span></div>
     </section>
 
-    <section aria-label="Arcade games">
+    <section class="shelf" id="arcade" aria-label="Arcade games">
       <div class="shelf-row">
         <a class="box box-md box-snake" href="games/snake/index.html">
           <span class="spec">1 player · Ages 6+ · 2–5 min</span>
@@ -102,10 +104,10 @@
           <span class="box-play">Play</span>
         </a>
       </div>
-      <div class="shelf-board spec"><span>Arcade</span><span>3 games</span></div>
+      <div class="shelf-board"><span class="shelf-label">Arcade</span><span class="shelf-count">3 games</span></div>
     </section>
 
-    <section aria-label="Table and card games">
+    <section class="shelf" id="table" aria-label="Table and card games">
       <div class="shelf-row">
         <a class="box box-lg box-four" href="games/four-in-a-row/index.html">
           <span class="spec">1–2 players · Ages 6+ · 5 min</span>
@@ -129,10 +131,10 @@
           <span class="box-play">Play</span>
         </a>
       </div>
-      <div class="shelf-board spec"><span>Table and cards</span><span>3 games</span></div>
+      <div class="shelf-board"><span class="shelf-label">Table and cards</span><span class="shelf-count">3 games</span></div>
     </section>
 
-    <section aria-label="Puzzles">
+    <section class="shelf" id="puzzles" aria-label="Puzzles">
       <div class="shelf-row">
         <a class="box box-md box-2048" href="games/2048/index.html">
           <span class="spec">1 player · Ages 8+ · 10 min</span>
@@ -156,14 +158,14 @@
           <span class="box-play">Play</span>
         </a>
       </div>
-      <div class="shelf-board spec"><span>Puzzles</span><span>3 games</span></div>
+      <div class="shelf-board"><span class="shelf-label">Puzzles</span><span class="shelf-count">3 games</span></div>
     </section>
 
   </main>
 
   <footer class="wrap site-footer">
     <span>Chromo. Plain HTML, CSS and JavaScript.</span>
-    <span>High scores are saved in this browser only.</span>
+    <span>High scores and worlds are saved in this browser only.</span>
   </footer>
 
   <script src="assets/js/shelf.js"></script>
