@@ -987,6 +987,183 @@ function tiltDemo(canvas) {
 }
 
 // Top-down battle royale: players scatter, the storm closes, the last dot standing wins.
+function overboostDemo(canvas) {
+  const { ctx, size, ink } = setup(canvas);
+  const TEAM = ["#5aa0ff", "#ff9a3c"];
+  const W = 1;
+  const H = 0.6;
+  const GOAL = 0.2;
+  const R = 0.034;
+  const scale = size * 0.44;
+  const px = (x) => size / 2 + x * scale;
+  const py = (y) => size * 0.56 + y * scale;
+  let ball, cars, score, burst, sparks, clock;
+
+  function kickoff() {
+    ball = { x: 0, y: 0, vx: 0, vy: 0 };
+    const side = Math.random() < 0.5 ? 1 : -1;
+    cars = [
+      { team: 0, x: -0.72, y: 0.3 * side, a: 0, v: 0 },
+      { team: 1, x: 0.72, y: -0.3 * side, a: Math.PI, v: 0 },
+    ];
+    burst = null;
+    sparks = [];
+    clock = 0;
+  }
+
+  function reset() {
+    score = [0, 0];
+    kickoff();
+  }
+
+  function step() {
+    sparks.forEach((p) => { p.life -= 1; });
+    sparks = sparks.filter((p) => p.life > 0);
+    if (burst) {
+      burst.t += 1;
+      if (burst.t > 30) {
+        if (score[0] + score[1] >= 7) score = [0, 0];
+        kickoff();
+      }
+      return;
+    }
+    clock += 1;
+    if (clock > 450) kickoff();
+    cars.forEach((c) => {
+      // Line up behind the ball on the way to the other goal, like the in-game bots.
+      const goalX = c.team === 0 ? W : -W;
+      const dx = ball.x - goalX;
+      const dy = ball.y;
+      const d = Math.hypot(dx, dy) || 1;
+      const tx = ball.x + (dx / d) * 0.1;
+      const ty = ball.y + (dy / d) * 0.1;
+      let turn = Math.atan2(ty - c.y, tx - c.x) - c.a;
+      while (turn > Math.PI) turn -= Math.PI * 2;
+      while (turn < -Math.PI) turn += Math.PI * 2;
+      c.a += Math.max(-0.17, Math.min(0.17, turn));
+      c.boost = Math.abs(turn) < 0.3;
+      c.v += ((c.boost ? 0.032 : 0.017) - c.v) * 0.12;
+      c.x = Math.max(-W + 0.05, Math.min(W - 0.05, c.x + Math.cos(c.a) * c.v));
+      c.y = Math.max(-H + 0.05, Math.min(H - 0.05, c.y + Math.sin(c.a) * c.v));
+      if (c.boost) sparks.push({ x: c.x - Math.cos(c.a) * 0.06, y: c.y - Math.sin(c.a) * 0.06, life: 7, team: c.team });
+      const bx = ball.x - c.x;
+      const by = ball.y - c.y;
+      const bd = Math.hypot(bx, by);
+      if (bd < R + 0.045 && bd > 0) {
+        const k = 0.02 + c.v * 1.1;
+        ball.vx = Math.cos(c.a) * k * 0.6 + (bx / bd) * k * 0.6;
+        ball.vy = Math.sin(c.a) * k * 0.6 + (by / bd) * k * 0.6;
+        ball.x = c.x + (bx / bd) * (R + 0.046);
+        ball.y = c.y + (by / bd) * (R + 0.046);
+      }
+    });
+    ball.x += ball.vx;
+    ball.y += ball.vy;
+    ball.vx *= 0.986;
+    ball.vy *= 0.986;
+    if (Math.abs(ball.y) > H - R) {
+      ball.y = Math.sign(ball.y) * (H - R);
+      ball.vy *= -0.8;
+    }
+    if (Math.abs(ball.x) > W - R) {
+      if (Math.abs(ball.y) < GOAL) {
+        const team = ball.x > 0 ? 0 : 1;
+        score[team] += 1;
+        burst = { t: 0, x: Math.sign(ball.x) * W, y: ball.y, team };
+      } else {
+        ball.x = Math.sign(ball.x) * (W - R);
+        ball.vx *= -0.8;
+      }
+    }
+  }
+
+  function pitchPath() {
+    const c = 0.14;
+    ctx.beginPath();
+    [[-W + c, -H], [W - c, -H], [W, -H + c], [W, H - c], [W - c, H], [-W + c, H], [-W, H - c], [-W, -H + c]]
+      .forEach(([x, y], i) => (i ? ctx.lineTo(px(x), py(y)) : ctx.moveTo(px(x), py(y))));
+    ctx.closePath();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, size, size);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.07)";
+    pitchPath();
+    ctx.fill();
+    ctx.strokeStyle = ink;
+    ctx.globalAlpha = 0.55;
+    ctx.lineWidth = 2;
+    pitchPath();
+    ctx.stroke();
+    ctx.globalAlpha = 0.3;
+    ctx.beginPath();
+    ctx.moveTo(px(0), py(-H));
+    ctx.lineTo(px(0), py(H));
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(px(0), py(0), 0.17 * scale, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+    [-1, 1].forEach((sgn) => {
+      ctx.fillStyle = TEAM[sgn < 0 ? 0 : 1];
+      const x0 = sgn < 0 ? px(-W - 0.08) : px(W);
+      ctx.fillRect(x0, py(-GOAL), 0.08 * scale, GOAL * 2 * scale);
+    });
+    sparks.forEach((p) => {
+      ctx.globalAlpha = p.life / 9;
+      ctx.fillStyle = TEAM[p.team];
+      ctx.beginPath();
+      ctx.arc(px(p.x), py(p.y), (2 + p.life * 0.35) * (size / 260), 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    cars.forEach((c) => {
+      ctx.save();
+      ctx.translate(px(c.x), py(c.y));
+      ctx.rotate(c.a);
+      ctx.fillStyle = TEAM[c.team];
+      roundedRect(ctx, -0.05 * scale, -0.03 * scale, 0.1 * scale, 0.06 * scale, 2);
+      ctx.fill();
+      ctx.fillStyle = "#16213b";
+      ctx.fillRect(-0.012 * scale, -0.022 * scale, 0.03 * scale, 0.044 * scale);
+      ctx.restore();
+    });
+    if (!burst) {
+      ctx.fillStyle = "#fafbfc";
+      ctx.beginPath();
+      ctx.arc(px(ball.x), py(ball.y), R * scale, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#16213b";
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    } else {
+      for (let i = 0; i < 3; i++) {
+        const t = burst.t - i * 5;
+        if (t <= 0) continue;
+        ctx.globalAlpha = Math.max(0, 1 - t / 26);
+        ctx.strokeStyle = TEAM[burst.team];
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(px(burst.x), py(burst.y), t * 0.018 * scale, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+    ctx.fillStyle = ink;
+    ctx.font = `800 ${Math.round(size * 0.1)}px "Big Shoulders Display", sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(`${score[0]} – ${score[1]}`, size / 2, size * 0.12);
+    ctx.fillStyle = TEAM[0];
+    ctx.fillRect(size / 2 - size * 0.2, size * 0.1, size * 0.05, size * 0.04);
+    ctx.fillStyle = TEAM[1];
+    ctx.fillRect(size / 2 + size * 0.15, size * 0.1, size * 0.05, size * 0.04);
+  }
+
+  reset();
+  run({ step, draw }, 40, 40);
+}
+
 function squallDemo(canvas) {
   const { ctx, size } = setup(canvas);
   const C = size / 2;
@@ -1272,6 +1449,7 @@ function quarryDemo(canvas) {
 const DEMOS = {
   squall: squallDemo,
   quarry: quarryDemo,
+  overboost: overboostDemo,
   stack: stackDemo,
   dash: dashDemo,
   tilt: tiltDemo,

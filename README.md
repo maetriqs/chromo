@@ -9,6 +9,10 @@ and an "In this cupboard" list at the top jumps to each shelf. On phones the box
 **Battle royale**
 - **Squall** (`games/squall/`): an original third-person battle royale on Kestrel Isle. See [Squall](#squall) below.
 
+**Sports**
+- **Overboost** (`games/overboost/`): original rocket-car football in a 3D stadium, 1v1 or 2v2 against bots,
+  with free play and shooting drills. See [Overboost](#overboost) below.
+
 **Sandbox**
 - **Quarry** (`games/quarry/`): an original first-person block sandbox on a generated island. Mine, build, craft,
   and play through day and night with a mouse or a touchscreen. See [Quarry](#quarry) below.
@@ -41,7 +45,8 @@ Every game page has a sound toggle. Effects are synthesized with the Web Audio A
 python3 -m http.server 8000
 ```
 
-Then open `http://localhost:8000`. Opening `index.html` directly also works.
+Then open `http://localhost:8000`. Opening `index.html` directly also works for every game except Overboost,
+which is an ES-module build and needs to be served over HTTP.
 Fonts (Big Shoulders Display and Atkinson Hyperlegible on the site, plus Pixelify Sans and VT323 in Quarry)
 load from Google Fonts, with system fallbacks when offline.
 
@@ -62,6 +67,8 @@ assets/img/favicon.svg      Site icon
 games/<game>/index.html     Game page
 games/<game>/game.js        Game logic
 games/squall/, games/quarry/  The two big games, split into css/ and js/ folders
+games/overboost/            Overboost's built files (generated, see below)
+source/overboost/           Overboost's source: a Vite project that builds into games/overboost/
 .nojekyll                   Tells GitHub Pages to serve the files as they are
 ```
 
@@ -184,13 +191,56 @@ the classic model. There is one save slot per browser.
 - `ui`: the HUD, screens and settings.
 - `main`: states, saving and the main loop.
 
+## Overboost
+
+Rocket-car football in a floodlit stadium. Every model, texture, sound and music track is generated in code.
+It's the one game here with a build step: it uses current Three.js (r186, bundled, separate from the vendored r128)
+and the Rapier physics engine, compiled with Vite. The source lives in `source/overboost/` and the build
+is committed to `games/overboost/`, so GitHub Pages still serves plain files.
+
+**Play.** 1v1 or 2v2 against Rookie, Pro or All-Star bots on a 3, 5 or 10 minute clock. The match ends when the
+ball next touches the ground after time runs out, and a tie goes to sudden-death overtime. There's also Free Play
+with unlimited boost, and Training, which is ten shooting drills with a ten-second limit each.
+
+**Driving.** Each car is a Rapier rigid body with raycast suspension against an analytic model of the arena. It
+has throttle and braking curves, speed-dependent steering, powerslide, jump, double jump and directional flips,
+air pitch, yaw and roll, boost to supersonic speed, and wall and ceiling driving. Cars flip back over when they
+land on their roof. Ball hits get an extra kick on top of the rigid-body response, and supersonic hits
+demolish opponents.
+
+**Bots.** The bots predict the ball's path, pick an intercept they can reach, and line up behind the ball toward
+the goal. They loop around it when on the wrong side and fall back to the far post when it's deep in their end.
+In 2v2 they split into attacker and support. Pro and All-Star bots add jump shots and flips. All-Star bots also
+attempt aerials. A bot teammate leaves the ball to you when you're closer.
+
+**Presentation.** A stadium with an animated crowd that jumps on goals, glass upper walls, glowing goal nets,
+floodlights, bloom, shadows and reflections. Boost trails, supersonic streaks, goal explosions with a
+shockwave, a ball-cam/car-cam camera with mouse or right-stick free look, a scorebug, a boost gauge and a
+results screen with stats. Settings cover graphics quality, volumes, camera distance, height, FOV and
+stiffness, mouse sensitivity, and full key rebinding. Gamepads work in game and in the menus.
+
+**Controls.** W/S drive · A/D steer · Space jump · Shift boost · Ctrl powerslide / air roll · Q/E air roll ·
+C ball cam · R reset · Esc pause · hold right mouse to look around. In Chrome and Edge, Ctrl+W closes the tab,
+so the game asks before leaving mid-match, and fullscreen locks the keyboard.
+
+**Rebuilding.** Requires Node.js 20.19+:
+
+```bash
+cd source/overboost
+npm install
+npm test        # physics/collider consistency and headless bot matches
+npm run build   # writes ../../games/overboost/
+```
+
+Commit `games/overboost/` together with any source change. See `source/overboost/README.md` for the code layout.
+
 ## Adding a game
 
 1. Copy a `games/<game>/` folder and rename it.
 2. Set the box colour on the page's `<body>`, e.g. `style="--box: var(--sea)"`, or add a colour token in `styles.css`.
 3. Add an `<a class="box box-md box-yourgame">` to a shelf in `index.html` with the spec line, name and blurb,
    and give `.box-yourgame` its `--box` colour in `styles.css`. Use `box-sm`, `box-md` or `box-lg` for the box size
-   (`box-xl` is kept for the two big games). A new shelf needs an `id` on its `<section class="shelf">`, a plank
+   (`box-xl` is kept for the big games: Squall, Quarry and Overboost). A new shelf needs an `id` on its `<section class="shelf">`, a plank
    (`shelf-board`) and an entry in the "In this cupboard" list at the top of the page.
 4. For a live preview, add a demo function to `assets/js/shelf.js`, register it in `DEMOS`,
    and point a `<canvas data-demo="...">` at it. Otherwise drop the canvas.

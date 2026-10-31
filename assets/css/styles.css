@@ -243,6 +243,7 @@ a {
 /* Dark boxes print in light ink and get a lighter lid edge. */
 .box-squall,
 .box-quarry,
+.box-overboost,
 .box-lights,
 .box-tilt {
   --ink: #fafbfc;
@@ -256,10 +257,12 @@ a {
 
 .box-squall:hover,
 .box-quarry:hover,
+.box-overboost:hover,
 .box-lights:hover,
 .box-tilt:hover,
 .box-squall:focus-visible,
 .box-quarry:focus-visible,
+.box-overboost:focus-visible,
 .box-lights:focus-visible,
 .box-tilt:focus-visible {
   box-shadow:
@@ -271,6 +274,7 @@ a {
 
 .box-squall { --box: #1f6b5d; }
 .box-quarry { --box: #6b4a2e; }
+.box-overboost { --box: #22407a; }
 .box-lights { --box: #16213b; }
 .box-tilt { --box: #8f4f86; }
 
@@ -486,7 +490,7 @@ a {
     font-size: 10.5px;
     letter-spacing: 0.06em;
   }
-  /* The two big games keep their picture on top. */
+  /* The big games keep their picture on top. */
   .box-xl {
     display: flex;
     padding: 18px 18px 22px;
